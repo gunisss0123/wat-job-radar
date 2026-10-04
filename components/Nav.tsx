@@ -8,10 +8,11 @@ export function Nav() {
 
   const navItems = [
     { href: '/', label: '📡 Radar (ทุกงาน)' },
+    { href: '/compare', label: '⚖️ Compare งาน' },
+    { href: '/fees', label: '💰 ค่าใช้จ่าย Agency' },
     { href: '/group', label: '👥 3 Friends' },
-    { href: '/compare', label: '⚖️ Compare' },
     { href: '/changes', label: '⚡ Live Changes' },
-    { href: '/sources', label: '🛡️ Sources & Coverage' },
+    { href: '/sources', label: '🛡️ Sources' },
   ];
 
   return (

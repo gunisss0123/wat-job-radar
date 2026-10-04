@@ -229,6 +229,14 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
             รวมงานสาธารณะอัตโนมัติจาก {totalAgencies} Agency ชั้นนำ (OEG, New Step, ALC, IEE, iHappy, ACADEX, Interchange, I4 Group) รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
             เปรียบเทียบค่าแรง ที่พัก จำนวนว่างจริง และภาพสถานที่ได้ในที่เดียว
           </p>
+          <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
+            <a href="/fees" className="preset-chip active" style={{ textDecoration: 'none', padding: '6px 14px', fontSize: 13, background: '#fff7ed', color: '#c2410c', borderColor: '#fdba74' }}>
+              💰 เช็คค่าใช้จ่าย & งวดชำระ 8 Agency ↗
+            </a>
+            <a href="/compare" className="preset-chip" style={{ textDecoration: 'none', padding: '6px 14px', fontSize: 13 }}>
+              ⚖️ เปรียบเทียบงานข้าม Agency ↗
+            </a>
+          </div>
         </div>
         <div className="live-badge">
           <span className="pulse-dot" />
@@ -731,14 +739,22 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
             </>
           )}
 
-          <div style={{ marginTop: 24 }}>
+          <div style={{ marginTop: 24, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <a
               href={job.sourceUrl}
               target="_blank"
               rel="noreferrer"
               className="modal-btn-cta"
+              style={{ flex: 1, minWidth: 200, textAlign: 'center' }}
             >
               เปิดดูหน้าประกาศต้นทางที่ {job.agency} ↗
+            </a>
+            <a
+              href="/fees"
+              className="modal-btn-cta"
+              style={{ background: '#f8fafc', color: 'var(--text-main)', border: '1px solid var(--border)', flex: '0 0 auto', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              💰 ดูค่าใช้จ่าย & นโยบายคืนเงิน {job.agency}
             </a>
           </div>
         </div>
