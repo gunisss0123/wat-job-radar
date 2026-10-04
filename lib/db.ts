@@ -151,7 +151,12 @@ export async function getJobs(): Promise<Job[]> {
         lastSeenAt: pos.lastSeenAt
       }));
     }
-    return realJobs.sort((a, b) => (b.fitScore || 0) - (a.fitScore || 0));
+    return realJobs.sort((a, b) => {
+      const timeB = new Date(b.firstSeenAt || b.lastSeenAt || 0).getTime();
+      const timeA = new Date(a.firstSeenAt || a.lastSeenAt || 0).getTime();
+      if (timeB !== timeA) return timeB - timeA;
+      return (b.fitScore || 0) - (a.fitScore || 0);
+    });
   }
 
   return seedJobs;

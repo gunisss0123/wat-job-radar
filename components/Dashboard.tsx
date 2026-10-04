@@ -52,6 +52,34 @@ function getFallbackForJob(j: Job): string {
   return defaultFallbacks[hash];
 }
 
+function formatArrivalDateTime(isoString?: string): string {
+  if (!isoString) return 'เร็วๆ นี้';
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return 'เร็วๆ นี้';
+    const bangkokTime = new Date(d.getTime() + (7 * 60 + d.getTimezoneOffset()) * 60000);
+    const day = bangkokTime.getDate();
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    const month = months[bangkokTime.getMonth()];
+    const hours = String(bangkokTime.getHours()).padStart(2, '0');
+    const minutes = String(bangkokTime.getMinutes()).padStart(2, '0');
+    return `${day} ${month} เวลา ${hours}:${minutes} น.`;
+  } catch {
+    return 'เร็วๆ นี้';
+  }
+}
+
+function isRecentJob(isoString?: string, maxAgeHours = 48): boolean {
+  if (!isoString) return false;
+  try {
+    const t = new Date(isoString).getTime();
+    if (isNaN(t)) return false;
+    return Date.now() - t < maxAgeHours * 3600 * 1000;
+  } catch {
+    return false;
+  }
+}
+
 const PAGE_CHUNK = 48;
 
 export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
@@ -59,10 +87,11 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
   const [agency, setAgency] = useState('ALL');
   const [state, setState] = useState('ALL');
   const [status, setStatus] = useState('ALL');
-  const [sortBy, setSortBy] = useState<'fit' | 'wage' | 'slots' | 'newest'>('fit');
+  const [sortBy, setSortBy] = useState<'newest' | 'fit' | 'wage' | 'slots'>('newest');
   const [displayLimit, setDisplayLimit] = useState(PAGE_CHUNK);
 
   // Quick Filter Chips
+  const [chipNewOnly, setChipNewOnly] = useState(false);
   const [chipGroup3, setChipGroup3] = useState(false);
   const [chipKitchen, setChipKitchen] = useState(false);
   const [chipHighWage, setChipHighWage] = useState(false);
@@ -84,7 +113,21 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
   // Reset page chunk when search or filters change
   useEffect(() => {
     setDisplayLimit(PAGE_CHUNK);
-  }, [q, agency, state, status, chipGroup3, chipKitchen, chipHighWage, chipAlaska, chipOpenOnly, sortBy]);
+  }, [q, agency, state, status, chipNewOnly, chipGroup3, chipKitchen, chipHighWage, chipAlaska, chipOpenOnly, sortBy]);
+
+  // Latest Job Arrival Time across all jobs
+  const latestArrivalIso = useMemo(() => {
+    let maxTime = 0;
+    let latestIso = '';
+    for (const j of initialJobs) {
+      const t = new Date(j.firstSeenAt || j.lastSeenAt || 0).getTime();
+      if (!isNaN(t) && t > maxTime) {
+        maxTime = t;
+        latestIso = j.firstSeenAt || j.lastSeenAt || '';
+      }
+    }
+    return latestIso || null;
+  }, [initialJobs]);
 
   // Agency Counts
   const agencyCounts = useMemo(() => {
@@ -110,6 +153,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
       if (status !== 'ALL' && j.status !== status) return false;
 
       // Chip filters
+      if (chipNewOnly && !isRecentJob(j.firstSeenAt || j.lastSeenAt, 48)) return false;
       if (chipGroup3 && (j.availableSlots != null ? j.availableSlots < 3 : false)) return false;
       if (chipKitchen && j.category !== 'KITCHEN_BOH' && j.category !== 'FOOD_BOH') return false;
       if (chipHighWage && (j.wageMin || 0) < 16) return false;
@@ -118,12 +162,17 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
 
       return true;
     }).sort((a, b) => {
+      if (sortBy === 'newest') {
+        const timeB = new Date(b.firstSeenAt || b.lastSeenAt || 0).getTime();
+        const timeA = new Date(a.firstSeenAt || a.lastSeenAt || 0).getTime();
+        if (timeB !== timeA) return timeB - timeA;
+        return (b.fitScore || 0) - (a.fitScore || 0);
+      }
       if (sortBy === 'wage') return (b.wageMin || 0) - (a.wageMin || 0);
       if (sortBy === 'slots') return (b.availableSlots || 0) - (a.availableSlots || 0);
-      if (sortBy === 'newest') return new Date(b.lastSeenAt).getTime() - new Date(a.lastSeenAt).getTime();
       return (b.fitScore || 0) - (a.fitScore || 0);
     });
-  }, [initialJobs, q, agency, state, status, chipGroup3, chipKitchen, chipHighWage, chipAlaska, chipOpenOnly, sortBy]);
+  }, [initialJobs, q, agency, state, status, chipNewOnly, chipGroup3, chipKitchen, chipHighWage, chipAlaska, chipOpenOnly, sortBy]);
 
   const displayedJobs = useMemo(() => filteredJobs.slice(0, displayLimit), [filteredJobs, displayLimit]);
 
@@ -137,6 +186,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
     setAgency('ALL');
     setState('ALL');
     setStatus('ALL');
+    setChipNewOnly(false);
     setChipGroup3(false);
     setChipKitchen(false);
     setChipHighWage(false);
@@ -144,7 +194,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
     setChipOpenOnly(false);
   };
 
-  const hasActiveFilters = q || agency !== 'ALL' || state !== 'ALL' || status !== 'ALL' || chipGroup3 || chipKitchen || chipHighWage || chipAlaska || chipOpenOnly;
+  const hasActiveFilters = q || agency !== 'ALL' || state !== 'ALL' || status !== 'ALL' || chipNewOnly || chipGroup3 || chipKitchen || chipHighWage || chipAlaska || chipOpenOnly;
 
   return (
     <main className="page">
@@ -154,15 +204,33 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
           <span className="eyebrow-chip">⚡ MULTI-AGENCY RADAR · SUMMER 2027</span>
           <h1>เรดาร์รวมงาน Work & Travel 2027</h1>
           <p>
-            รวมงานสาธารณะอัตโนมัติจาก 5 Agency ชั้นนำ (OEG, New Step, ALC, IEE, iHappy) รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
+            รวมงานสาธารณะอัตโนมัติจาก 6 Agency ชั้นนำ (OEG, New Step, ALC, IEE, iHappy, ACADEX) รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
             เปรียบเทียบค่าแรง ที่พัก จำนวนว่างจริง และภาพสถานที่ได้ในที่เดียว
           </p>
         </div>
         <div className="live-badge">
           <span className="pulse-dot" />
-          Near Real-Time Active ({totalAgencies} Agencies)
+          Auto-Sync ทุก 1 ชม. ({totalAgencies} Agencies)
         </div>
       </section>
+
+      {/* Hourly Auto-Sync Status Bar */}
+      <div className="sync-status-bar">
+        <div className="sync-status-item">
+          <span className="pulse-dot" />
+          <span>รอบดึงงาน: <b>ดึงข้อมูลใหม่อัตโนมัติทุก 1 ชั่วโมง (Hourly Auto-Sync)</b></span>
+        </div>
+        {latestArrivalIso && (
+          <div className="sync-status-item">
+            <span>🕒</span>
+            <span>ตรวจพบงานใหม่ล่าสุดเมื่อ: <b style={{ color: 'var(--orange)' }}>{formatArrivalDateTime(latestArrivalIso)}</b></span>
+          </div>
+        )}
+        <div className="sync-status-item">
+          <span>📌</span>
+          <span style={{ color: 'var(--text-muted)' }}>ลำดับการแสดงผล: <b>งานใหม่ล่าสุดแสดงขึ้นก่อนอันดับแรกเสมอ</b></span>
+        </div>
+      </div>
 
       {/* KPI Metrics */}
       <section className="metrics">
@@ -191,7 +259,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
           <div className="stat-icon" style={{ background: '#f5f3ff', color: '#7c3aed' }}>🏢</div>
           <div className="stat-content">
             <b>{totalAgencies} Agencies</b>
-            <span>OEG, NewStep, ALC, IEE, iHappy</span>
+            <span>OEG, NewStep, ALC, IEE, iHappy, ACADEX</span>
           </div>
         </div>
       </section>
@@ -255,16 +323,23 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
           </select>
 
           <select className="filter-select" value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}>
+            <option value="newest">🆕 งานใหม่ล่าสุด (ขึ้นก่อน)</option>
             <option value="fit">⭐ เรียงตาม Fit Score</option>
             <option value="wage">💵 เรียงตามค่าแรง สูง-ต่ำ</option>
             <option value="slots">🔢 เรียงตามที่ว่าง มาก-น้อย</option>
-            <option value="newest">🕒 อัปเดตล่าสุด</option>
           </select>
         </div>
 
         {/* Quick Filter Preset Chips */}
         <div className="quick-chips-wrap">
           <span className="chip-label">Quick Filters:</span>
+          <button
+            type="button"
+            className={`preset-chip ${chipNewOnly ? 'active orange' : ''}`}
+            onClick={() => setChipNewOnly(!chipNewOnly)}
+          >
+            🆕 งานเข้าใหม่ล่าสุด
+          </button>
           <button
             type="button"
             className={`preset-chip ${chipGroup3 ? 'active emerald' : ''}`}
@@ -385,6 +460,8 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
   const statusInfo = statusLabels[job.status] || { label: job.status, class: 'unknown' };
 
   const isGroup3 = job.availableSlots == null || job.availableSlots >= 3;
+  const isRecent = isRecentJob(job.firstSeenAt || job.lastSeenAt, 48);
+  const arrivalTime = formatArrivalDateTime(job.firstSeenAt || job.lastSeenAt);
   const locationDisplay = [job.city, job.state].filter(Boolean).join(', ') || 'USA';
 
   return (
@@ -402,6 +479,11 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
 
         <div className="card-top-tags">
           <span className={`agency-badge ${agencyClass}`}>{job.agency}</span>
+          {isRecent && (
+            <span className="new-arrival-pill">
+              🆕 งานเข้าใหม่
+            </span>
+          )}
           <span className={`status-pill ${statusInfo.class}`}>
             <span className="dot" />
             {statusInfo.label}
@@ -416,6 +498,12 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
 
       {/* Card Content */}
       <div className="card-content">
+        {/* Exact Arrival Timestamp Tag */}
+        <div className={`card-arrival-badge ${isRecent ? 'highlight-new' : ''}`}>
+          <span>🕒</span>
+          <span>เข้าสู่ระบบ: <b>{arrivalTime}</b></span>
+        </div>
+
         <h2 className="card-employer-title" title={job.employer}>
           {job.employer}
         </h2>
@@ -590,6 +678,28 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="metric-cell">
               <span className="metric-cell-label">วันสิ้นสุดงาน</span>
               <span className="metric-cell-val">{job.endText || 'สิงหาคม - กันยายน 2027'}</span>
+            </div>
+          </div>
+
+          <div className="modal-section-title">🕒 ไทม์ไลน์การตรวจพบงาน (Auto-Sync Radar)</div>
+          <div className="modal-details-grid">
+            <div className="metric-cell">
+              <span className="metric-cell-label">🆕 ตรวจพบงานใหม่ครั้งแรก</span>
+              <span className="metric-cell-val val-green">
+                {formatArrivalDateTime(job.firstSeenAt || job.lastSeenAt)}
+              </span>
+            </div>
+            <div className="metric-cell">
+              <span className="metric-cell-label">🔄 ซิงก์ข้อมูลสถานะล่าสุด</span>
+              <span className="metric-cell-val">
+                {formatArrivalDateTime(job.lastSeenAt)}
+              </span>
+            </div>
+            <div className="metric-cell" style={{ gridColumn: 'span 2' }}>
+              <span className="metric-cell-label">⏱️ รอบการดึงงานใหม่อัตโนมัติ</span>
+              <span className="metric-cell-val" style={{ color: 'var(--sky-blue)' }}>
+                ดึงข้อมูลสดอัตโนมัติทุก 1 ชั่วโมง (Hourly Auto-Sync)
+              </span>
             </div>
           </div>
 

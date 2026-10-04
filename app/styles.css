@@ -496,6 +496,37 @@ html, body {
   box-shadow: 0 2px 6px rgba(249, 115, 22, 0.15);
 }
 
+.preset-chip.active.orange {
+  background: #ffedd5;
+  border-color: #f97316;
+  color: #ea580c;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
+}
+
+/* Hourly Sync Status Bar */
+.sync-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #ffffff;
+  border: 1.5px solid #bae6fd;
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  margin: 18px 0 22px;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.06);
+}
+
+.sync-status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
 /* ==========================================================================
    RESULT BAR HEADER
    ========================================================================== */
@@ -715,6 +746,43 @@ html, body {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+/* Card Arrival Timestamp & Tag */
+.card-arrival-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0369a1;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  width: fit-content;
+  letter-spacing: 0.01em;
+}
+
+.card-arrival-badge.highlight-new {
+  color: #c2410c;
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.new-arrival-pill {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  box-shadow: 0 1px 4px rgba(234, 88, 12, 0.2);
 }
 
 .card-employer-title {

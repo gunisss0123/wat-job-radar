@@ -3,7 +3,7 @@ name: Sync All WAT Agencies
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *' # Run every 6 hours
+    - cron: '0 * * * *' # Run every 1 hour (ทุก 1 ชั่วโมง)
 
 concurrency:
   group: wat-job-sync
