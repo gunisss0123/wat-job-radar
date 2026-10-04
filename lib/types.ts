@@ -46,6 +46,7 @@ export type Job = {
   hoursMax?: number;
   hoursText?: string;
   availableSlots?: number | null;
+  slotType?: SlotSemanticType;
   availabilityText?: string;
   status: JobStatus;
   startText?: string;
@@ -95,6 +96,7 @@ export type SlotSemanticType = 'EXACT' | 'AT_LEAST' | 'AT_MOST' | 'FULL' | 'UNKN
  * Granular scraped position returned by an Agency connector
  */
 export interface ScrapedPositionItem {
+  sourceId?: string;
   name: string;
   category?: JobCategory;
   wageHourly?: number;
@@ -133,6 +135,7 @@ export interface ScrapedJobRecord {
   area?: string;
   season: string;
   programStatus?: string;
+  sourceNotes?: string;
   startDateText?: string;
   endDateText?: string;
   locationRaw?: string;
@@ -193,6 +196,7 @@ export interface AgencyEmployer {
   sourceId?: string;
   season: string;
   programStatus?: string;
+  sourceNotes?: string;
   startDateText?: string;
   endDateText?: string;
   locationRaw?: string;
@@ -209,7 +213,7 @@ export interface Housing {
   housingText?: string;
   deposit?: number;
   depositText?: string;
-  mealsIncluded: boolean;
+  mealsIncluded?: boolean;
   mealsPerDay?: number;
   mealsText?: string;
   transportationText?: string;
@@ -243,10 +247,17 @@ export interface Position {
 }
 
 export interface JobSnapshot {
+  baseline?: boolean;
   id?: number;
   positionId: string;
   availableSlots?: number | null;
   wageHourly?: number;
+  wageText?: string;
+  housingWeekly?: number;
+  housingText?: string;
+  eventType?: JobEvent['eventType'];
+  beforeValue?: string;
+  afterValue?: string;
   status: JobStatus;
   capturedAt: string;
 }
@@ -319,4 +330,3 @@ export interface CoverageReport {
   status: 'SUCCESS' | 'WARNING' | 'ERROR';
   anomalyWarning?: string;
 }
-

@@ -92,7 +92,7 @@ export function canonicalEmployer(rawName: string, city?: string, state?: string
     if (ALIAS_MAP[normalizedKey].area) area = ALIAS_MAP[normalizedKey].area;
   }
 
-  const id = slug(`${canonicalName}-${state || ''}`);
+  const id = slug(`${canonicalName}-${city || ''}-${state || ''}`);
 
   return {
     id,

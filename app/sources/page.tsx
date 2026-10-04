@@ -26,7 +26,7 @@ export default async function Page() {
           <h1>สถานะแหล่งข้อมูลและการเชื่อมต่อ (Source Health)</h1>
           <p>
             ตรวจสอบความสมบูรณ์ในการดึงข้อมูล (Coverage) และสถานะการเข้าถึงหน้าเว็บของทั้ง 8 Agency
-            ถ้า Agency ใดเปลี่ยนโครงสร้างหน้าเว็บ ระบบจะขึ้นเตือนทันที
+            Coverage วัดการอ่านหน้าที่ค้นพบได้ ไม่ใช่การรับรองว่าราคาและที่ว่างถูกต้อง 100%
           </p>
         </div>
       </section>
@@ -34,22 +34,23 @@ export default async function Page() {
       <section className="sourcegrid">
         {healthEntries.map((h) => {
           const badgeClass = agencyBadges[h.agencyId] || 'oeg';
+          const unknownCount = Object.values(store.positions).filter(p => !p.isStale && p.status === 'UNKNOWN' && store.agencyEmployers[p.agencyEmployerId]?.agencyId === h.agencyId).length;
           return (
             <article key={h.agencyId}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className={`agency-badge ${badgeClass}`}>{h.agencyId}</span>
-                <span className="health ok">
-                  ✓ {h.lastStatus} ({h.lastCoveragePct}%)
+                <span className={`health ${h.lastStatus === 'Healthy' ? 'ok' : 'error'}`}>
+                  {h.lastStatus === 'Healthy' ? '✓' : '⚠'} {h.lastStatus} ({Number.isFinite(h.lastCoveragePct) ? h.lastCoveragePct.toFixed(1) + '%' : 'ไม่ระบุ Coverage'})
                 </span>
               </div>
 
               <h2>{h.agencyId}</h2>
               <b>{h.positionsCount.toLocaleString()} ตำแหน่งงาน</b>
               <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                จาก {h.employersCount} นายจ้าง (เปิดรับ {h.activePositionsCount} ตำแหน่ง)
+                จาก {h.employersCount} นายจ้างที่ค้นพบ (ยืนยันเปิดรับ {h.activePositionsCount} ตำแหน่ง · ไม่ระบุสถานะ {unknownCount})
               </div>
               <small>
-                ประเภท Connector: {h.connectorType} · ซิงก์ล่าสุด {h.lastSyncAt ? new Date(h.lastSyncAt).toLocaleString('th-TH') : 'วันนี้'}
+                ประเภท Connector: {h.connectorType} · ซิงก์ล่าสุด {h.lastSyncAt ? new Date(h.lastSyncAt).toLocaleString('th-TH') : 'ไม่ระบุ'}
               </small>
 
               {h.lastError && (

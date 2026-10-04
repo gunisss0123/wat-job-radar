@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-04T15:24:55.732Z",
+  "apiRows": 1691,
+  "invalidWages": [],
+  "invalidSlots": [],
+  "fullWithPositiveSlots": [],
+  "badUrls": [],
+  "objectDates": [],
+  "stockCatalogs": [],
+  "historical": 312,
+  "unknownYear": 331,
+  "year2027": 1048,
+  "sourceCounts": [
+    {
+      "agency": "OEG",
+      "rows": 129,
+      "health": "OK"
+    },
+    {
+      "agency": "New Step",
+      "rows": 189,
+      "health": "OK"
+    },
+    {
+      "agency": "ALC",
+      "rows": 628,
+      "health": "ERROR"
+    },
+    {
+      "agency": "IEE",
+      "rows": 254,
+      "health": "OK"
+    },
+    {
+      "agency": "iHappy",
+      "rows": 35,
+      "health": "OK"
+    },
+    {
+      "agency": "ACADEX",
+      "rows": 456,
+      "health": "OK"
+    },
+    {
+      "agency": "Interchange",
+      "rows": 0,
+      "health": "ERROR"
+    },
+    {
+      "agency": "I4 Group",
+      "rows": 0,
+      "health": "ERROR"
+    }
+  ],
+  "pages": [
+    {
+      "path": "/compare",
+      "status": 200
+    },
+    {
+      "path": "/group",
+      "status": 200
+    },
+    {
+      "path": "/changes",
+      "status": 200
+    },
+    {
+      "path": "/sources",
+      "status": 200
+    }
+  ]
+}

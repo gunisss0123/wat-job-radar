@@ -9,6 +9,7 @@ import type {
   FailedUrlItem
 } from '../types';
 import { categorizePosition } from '../normalize';
+import { parseSourceDateRange, mealsFromEvidence, seasonFromEvidence } from '../dataIntegrity';
 
 const NEWSTEP_API_BASE = 'https://api.newstepthailand.com/api/v1';
 const NEWSTEP_API_KEY = 'byssczyjywbbnfsumuejahcuspzobsod';
@@ -91,8 +92,7 @@ export function parseNewStepWeeklyHousing(text?: string | null): number | undefi
   const dayMatch = cleaned.match(/\$?\s*(\d+(?:\.\d+)?)\s*(?:\/|\s*per\s*)?(?:day|วัน)/i);
   if (dayMatch) return Number((Number(dayMatch[1]) * 7).toFixed(1));
 
-  const generalNum = cleaned.match(/\$?\s*(\d+(?:\.\d+)?)/);
-  return generalNum ? Number(generalNum[1]) : undefined;
+  return undefined;
 }
 
 /**
@@ -329,21 +329,21 @@ export async function scrapeNewStep(
           const housingWeekly = parseNewStepWeeklyHousing(houseCostText);
           const travelingToWork = detailData.travelingToWork ? String(detailData.travelingToWork).trim() : undefined;
           const depositText = detailData.housingDeposit ? String(detailData.housingDeposit).trim() : undefined;
-          const depositNum = depositText ? parseNewStepWeeklyHousing(depositText) : undefined;
-          const startSummer = detailData.startSummer ? String(detailData.startSummer).trim() : undefined;
-          const endSummer = detailData.endSummer ? String(detailData.endSummer).trim() : undefined;
+          const depositNum = depositText?.match(/\$\s*(\d+(?:\.\d+)?)/)?.[1];
+          const startSummer = parseSourceDateRange(detailData.startSummer);
+          const endSummer = parseSourceDateRange(detailData.endSummer);
           const employerStatus = detailData.statusOfEmployers ? String(detailData.statusOfEmployers).trim() : undefined;
 
           const housingRecord = {
             weeklyCost: housingWeekly,
             housingText: houseCostText,
-            deposit: depositNum,
+            deposit: depositNum == null ? undefined : Number(depositNum),
             depositText,
             transportationText: travelingToWork,
-            mealsIncluded: /meal|อาหาร/i.test(houseCostText || '')
+            mealsIncluded: mealsFromEvidence(houseCostText)
           };
 
-          const jobsList: any[] = detailData.jobs || [];
+          const jobsList: any[] = (detailData.jobs || []).filter((j: any) => !j.isDelete && j.isActive !== false);
 
           const imageUrl = detailData.avatar || detailData.og || item.imageUrl || (detailData.additionalAvatar && detailData.additionalAvatar[0]?.avatar);
 
@@ -379,6 +379,7 @@ export async function scrapeNewStep(
               }
 
               const positionItem: ScrapedPositionItem = {
+                sourceId: j.id == null ? undefined : String(j.id),
                 name: positionName,
                 category: categorizePosition(positionName),
                 wageHourly,
@@ -392,6 +393,11 @@ export async function scrapeNewStep(
                 englishLevel: j.englishLevel || undefined,
                 status
               };
+              if (status === 'FULL') {
+                positionItem.availableSlots = 0;
+                positionItem.slotType = 'FULL';
+                positionItem.availabilityText = 'เต็ม (สถานะต้นทาง)';
+              }
 
               records.push({
                 agency: 'New Step',
@@ -399,7 +405,7 @@ export async function scrapeNewStep(
                 sourceId: String(detailData.id || item.sourceId || ''),
                 city,
                 state,
-                season: 'Summer 2027',
+                season: seasonFromEvidence('Summer', startSummer, endSummer),
                 programStatus: employerStatus,
                 startDateText: startSummer,
                 endDateText: endSummer,
@@ -420,7 +426,7 @@ export async function scrapeNewStep(
               sourceId: String(detailData.id || item.sourceId || ''),
               city,
               state,
-              season: 'Summer 2027',
+              season: seasonFromEvidence('Summer', startSummer, endSummer),
               programStatus: employerStatus,
               startDateText: startSummer,
               endDateText: endSummer,

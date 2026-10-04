@@ -8,6 +8,7 @@ import type {
   SlotSemanticType,
   FailedUrlItem
 } from '../types';
+import { seasonFromEvidence } from '../dataIntegrity';
 import { categorizePosition } from '../normalize';
 
 const OEG_LIST_URL = 'https://www.oeg.co.th/work-and-travel-usa';
@@ -256,7 +257,7 @@ export async function scrapeOEG(
           const housingParsed = parseOEGHousing(housingMatch?.[1] || '');
 
           const isSpring = /Spring/i.test(item.name) || /Spring/i.test(detailTitle);
-          const season = isSpring ? 'Spring 2027' : 'Summer 2027';
+          const season = seasonFromEvidence(isSpring ? 'Spring' : 'Summer', startMatch?.[1], endMatch?.[1]);
 
           const posBoxes = $('section.position .box');
           let parsedAnyPosition = false;

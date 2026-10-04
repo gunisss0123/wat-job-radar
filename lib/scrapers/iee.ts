@@ -6,6 +6,7 @@ import type {
   FailedUrlItem
 } from '../types';
 import { categorizePosition } from '../normalize';
+import { seasonFromEvidence, parseWeeklyCost } from '../dataIntegrity';
 
 const IEE_LIST_URL = 'https://www.ieethailand.com/work-and-travel-new/';
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
@@ -90,6 +91,7 @@ export async function scrapeIEE(): Promise<{
     wageText: string;
     imageUrl: string;
     datesText: string;
+    seasons: string;
   }> = [];
 
   const seenUrls = new Set<string>();
@@ -127,7 +129,8 @@ export async function scrapeIEE(): Promise<{
       locationText,
       wageText,
       imageUrl: bgImg,
-      datesText
+      datesText,
+      seasons: $(el).find('.program-hashtag span').map((_, e) => $(e).text().trim()).get().filter(s => /^(Summer|Spring)$/i.test(s)).join(' / ') || 'Unknown'
     });
   });
 
@@ -154,17 +157,21 @@ export async function scrapeIEE(): Promise<{
             state = emp.locationText;
           }
 
+          const detailText = $d('body').clone().find('script,style').remove().end().text().replace(/\s+/g, ' ');
+          const housingText = detailText.match(/Housing Rate\s+([^]*?)(?=\*|ตำแหน่งงาน|Position)/i)?.[1]?.trim();
+          const sourceNotes = detailText.match(/The information is based on[^]*?(?=\*|ตำแหน่งงาน)/i)?.[0]?.trim();
+          const season = seasonFromEvidence(emp.seasons, emp.datesText);
           const posRows = $d('tr:has(td[data-mtr-content*="Position"])');
 
           if (posRows.length > 0) {
             posRows.each((_, row) => {
               const posEl = $d(row).find('.program-position-title');
               const posName = posEl.clone().children().remove().end().text().trim() || 'General Position';
-              const englishLevel = $d(row).find('.program-position-tips').text().replace(/English Level:\s*/i, '').trim() || 'Intermediate';
+              const englishLevel = $d(row).find('.program-position-tips').text().replace(/English Level:\s*/i, '').trim() || undefined;
               const wageRaw = $d(row).find('td[data-mtr-content*="Hourly Wage"]').text().trim() || emp.wageText;
 
               const wageMatch = wageRaw.match(/(\d+(?:\.\d+)?)/);
-              const wageHourly = wageMatch ? Number(wageMatch[1]) : 15;
+              const wageHourly = wageMatch ? Number(wageMatch[1]) : undefined;
               const tipsIncluded = /tips/i.test(wageRaw);
               const posPic = $d(row).find('a[content-picture]').attr('content-picture') || emp.imageUrl;
 
@@ -176,23 +183,27 @@ export async function scrapeIEE(): Promise<{
                 sourceId: `iee-${emp.title.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-${posName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`,
                 city,
                 state,
-                season: 'Summer 2027',
+                season,
+                sourceNotes,
+                startDateText: emp.datesText || undefined,
                 locationRaw: emp.locationText,
                 position: {
                   name: posName,
                   category: categorizePosition(posName),
                   wageHourly,
-                  wageText: wageRaw.startsWith('$') ? wageRaw : `$${wageRaw}`,
+                  wageText: wageRaw || undefined,
+                  wageMax: Number(wageRaw.match(/[-–]\s*\$?\s*(\d+(?:\.\d+)?)/)?.[1]) || wageHourly,
                   tips: tipsIncluded,
                   availableSlots: null,
                   slotType: 'UNKNOWN',
-                  rawSlotText: 'เปิดรับ (ตามสอบสัมภาษณ์)',
-                  availabilityText: 'เปิดรับ (ไม่ระบุตัวเลข)',
+                  rawSlotText: 'ไม่ระบุ',
+                  availabilityText: 'ไม่ระบุจำนวนและสถานะ',
                   englishLevel,
-                  status: 'OPEN'
+                  status: 'UNKNOWN'
                 },
                 housing: {
-                  housingText: 'มีที่พักจัดสรรให้โดยนายจ้างหรือประสานงานผ่าน IEE'
+                  housingText,
+                  weeklyCost: parseWeeklyCost(housingText)
                 },
                 sourceUrl: emp.url,
                 imageUrl: posPic || emp.imageUrl,
@@ -208,22 +219,25 @@ export async function scrapeIEE(): Promise<{
               sourceId: `iee-${emp.title.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`,
               city,
               state,
-              season: 'Summer 2027',
+              season,
+              sourceNotes,
+              startDateText: emp.datesText || undefined,
               locationRaw: emp.locationText,
               position: {
                 name: 'Work & Travel Staff',
                 category: 'OTHER',
-                wageHourly: wageMatch ? Number(wageMatch[1]) : 15,
-                wageText: emp.wageText || '$15/hr',
+                wageHourly: wageMatch ? Number(wageMatch[1]) : undefined,
+                wageText: emp.wageText || undefined,
                 availableSlots: null,
                 slotType: 'UNKNOWN',
-                rawSlotText: 'เปิดรับ',
-                availabilityText: 'เปิดรับ',
-                englishLevel: 'Intermediate',
-                status: 'OPEN'
+                rawSlotText: 'ไม่ระบุ',
+                availabilityText: 'ไม่ระบุจำนวนและสถานะ',
+                englishLevel: undefined,
+                status: 'UNKNOWN'
               },
               housing: {
-                housingText: 'มีที่พักจัดสรรให้โดยนายจ้างหรือประสานงานผ่าน IEE'
+                housingText,
+                  weeklyCost: parseWeeklyCost(housingText)
               },
               sourceUrl: emp.url,
               imageUrl: emp.imageUrl,

@@ -1,5 +1,6 @@
 import type { Job, JobCategory } from './types';
 import { clamp } from './common';
+import { verifiedGroupCapacity } from './dataIntegrity';
 
 const NATURE_STATES: Record<string,number> = {
   alaska:10, montana:9.5, wyoming:10, utah:9, colorado:9, maine:8, vermont:8,
@@ -75,22 +76,20 @@ function inferLocation(job:Job){
 
 export function enrichForProfile(input:Job): Job {
   const job={...input};
-  inferLocation(job);
   job.category ||= categoryFrom(job.position);
-  job.englishFit ||= englishFrom(job.position);
   job.natureFit ??= byLocation(job,NATURE_TOWNS,stateScore(job));
   job.secondJobFit ??= byLocation(job,JOB2_TOWNS,6);
   const hint=EMPLOYER_HINTS.find(([r])=>r.test(job.employer));
   job.employerFit ??= hint?.[1] ?? 7;
   job.socialFit ??= hint?.[2] ?? (/(lodge|resort|national park|seasonal)/i.test(job.employer+' '+(job.rawText||'')) ? 8 : 6.5);
-  job.group3Fit ??= job.availableSlots == null ? 6.5 : job.availableSlots >= 3 ? 10 : job.availableSlots > 0 ? 3.5 : 0;
+  job.group3Fit ??= verifiedGroupCapacity(job) >= 3 ? 10 : verifiedGroupCapacity(job) > 0 ? 3.5 : 0;
 
-  const wage=job.wageMax ?? job.wageMin ?? 15;
+  const wage=job.wageMin ?? 15;
   const housing=job.housingWeekly ?? 160;
   let effective=wage - housing/40;
   if (job.mealsIncluded) effective += 1.5;
   job.valueFit ??= clamp((effective-9)/1.05,3,10);
-  const employerSocial=((job.employerFit||7)+(job.socialFit||7))/2;
-  job.fitScore=Math.round((employerSocial*.30 + (job.natureFit||5)*.25 + (job.valueFit||5)*.20 + (job.secondJobFit||5)*.15 + (job.group3Fit||5)*.10)*10)/10;
+  const employerSocial=((job.employerFit ?? 7)+(job.socialFit ?? 7))/2;
+  job.fitScore=Math.round((employerSocial*.30 + (job.natureFit ?? 5)*.25 + (job.valueFit ?? 5)*.20 + (job.secondJobFit ?? 5)*.15 + (job.group3Fit ?? 5)*.10)*10)/10;
   return job;
 }

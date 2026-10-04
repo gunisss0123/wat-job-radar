@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useDeferredValue } from 'react';
+import { verifiedGroupCapacity } from '@/lib/dataIntegrity';
 import type { Job } from '@/lib/types';
 
 function formatArrivalDateTime(isoString?: string): string {
@@ -179,8 +180,8 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
       {/* Hero Section */}
       <section className="hero">
         <div>
-          <span className="eyebrow-chip">⚖️ MULTI-AGENCY COMPARISON · SUMMER 2027</span>
-          <h1>เปรียบเทียบงาน Work & Travel 2027</h1>
+          <span className="eyebrow-chip">⚖️ MULTI-AGENCY COMPARISON · SOURCE DATA</span>
+          <h1>เปรียบเทียบงาน Work & Travel</h1>
           <p>
             เลือกรัฐและเมืองที่คุณสนใจก่อน จากนั้นเลือกตำแหน่งงานมาวางเทียบกันแบบเคียงข้าง (Side-by-Side) สูงสุด 4 งาน
             ทั้งค่าจ้าง, ที่พัก, วันตรวจพบในเว็บ Agency, สวัสดิการ และ Fit Score ไลฟ์สไตล์
@@ -584,6 +585,8 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
   const maxWage = Math.max(...activeJobs.map((j) => j.wageMin || 0));
 
   return [
+    ['📆 ปีโครงการตามต้นทาง', j => j.season],
+    ['ℹ️ ข้อจำกัดของข้อมูล', j => j.notes || 'ตรวจรายละเอียดและวันที่ปรับปรุงในประกาศต้นทาง'],
     [
       '🏢 Agency ต้นทาง',
       (j) => (
@@ -646,7 +649,7 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
       '🏠 ค่าที่พัก (Housing Weekly)',
       (j) => (
         <span>
-          {j.housingWeekly ? <b>${j.housingWeekly}/สัปดาห์</b> : 'ตามที่นายจ้างกำหนด'}
+          {j.housingWeekly != null ? <b>${j.housingWeekly}/สัปดาห์</b> : 'ตามที่นายจ้างกำหนด'}
         </span>
       ),
     ],
@@ -654,7 +657,7 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
       '🏘️ รายละเอียดที่พัก',
       (j) => (
         <span style={{ fontSize: 13, lineHeight: 1.4 }}>
-          {j.housingText || 'มีที่พักจัดสรรให้โดยนายจ้างหรือประสานงานผ่าน Agency'}
+          {j.housingText || 'ต้นทางไม่ระบุรายละเอียดที่พัก'}
         </span>
       ),
     ],
@@ -662,13 +665,13 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
       '🍱 แผนอาหาร (Meal Plan)',
       (j) => (
         <span>
-          {j.mealsIncluded ? '🍱 รวมอาหาร/มี meal voucher' : j.mealsText || 'ซื้อเองหรือตามสะดวก'}
+          {j.mealsText || (j.mealsIncluded === true ? '🍱 รวมอาหารตามประกาศ' : j.mealsIncluded === false ? 'ไม่รวมอาหารฟรี' : 'ต้นทางไม่ระบุ')}
         </span>
       ),
     ],
     [
       '⏱️ ชั่วโมงทำงาน (Hours/Week)',
-      (j) => <span>{j.hoursText || '32-40 ชม./สัปดาห์'}</span>,
+      (j) => <span>{j.hoursText || 'ต้นทางไม่ระบุ'}</span>,
     ],
     [
       '🔢 จำนวนที่ว่าง & สถานะ',
@@ -690,13 +693,13 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
     [
       '👥 ความเข้ากันได้กลุ่ม 3 คน',
       (j) => {
-        const isG3 = j.availableSlots == null || j.availableSlots >= 3;
+        const isG3 = verifiedGroupCapacity(j) >= 3;
         return isG3 ? (
           <span style={{ color: 'var(--emerald-dark)', fontWeight: 700 }}>
             ✨ เหมาะมาก (รับ ≥ 3 คน)
           </span>
         ) : (
-          <span style={{ color: 'var(--text-dim)' }}>รับเดี่ยว/จำนวนจำกัด</span>
+          <span style={{ color: 'var(--text-dim)' }}>ยังยืนยัน 3 ที่ไม่ได้</span>
         );
       },
     ],
@@ -704,25 +707,25 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
       '📅 ช่วงวันทำงาน (Work Dates)',
       (j) => (
         <div style={{ fontSize: 12.5 }}>
-          <div>เริ่ม: {j.startText || 'พ.ค. - มิ.ย. 2027'}</div>
-          <div>จบ: {j.endText || 'ส.ค. - ก.ย. 2027'}</div>
+          <div>เริ่ม: {j.startText || 'ต้นทางไม่ระบุ'}</div>
+          <div>จบ: {j.endText || 'ต้นทางไม่ระบุ'}</div>
         </div>
       ),
     ],
     [
-      '🌲 Fit Score: ธรรมชาติ',
+      '🌲 คะแนนประมาณ: ธรรมชาติ',
       (j) => <b>{j.natureFit != null ? `${j.natureFit}/10` : '—'}</b>,
     ],
     [
-      '💼 Fit Score: โอกาส Job 2',
+      '💼 คะแนนประมาณ: โอกาส Job 2',
       (j) => <b>{j.secondJobFit != null ? `${j.secondJobFit}/10` : '—'}</b>,
     ],
     [
-      '🏢 Fit Score: นายจ้าง',
+      '🏢 คะแนนประมาณ: นายจ้าง',
       (j) => <b>{j.employerFit != null ? `${j.employerFit}/10` : '—'}</b>,
     ],
     [
-      '🤝 Fit Score: สังคม',
+      '🤝 คะแนนประมาณ: สังคม',
       (j) => <b>{j.socialFit != null ? `${j.socialFit}/10` : '—'}</b>,
     ],
     [

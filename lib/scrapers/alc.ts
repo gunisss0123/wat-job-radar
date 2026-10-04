@@ -7,6 +7,7 @@ import type {
   FailedUrlItem
 } from '../types';
 import { categorizePosition } from '../normalize';
+import { parseWeeklyCost, seasonFromEvidence } from '../dataIntegrity';
 
 const ALC_API_BASE = 'https://api.myalcapp.com/api/v1/web/wat/job';
 const ALC_WEB_BASE = 'https://myalcapp.com/work-and-travel/jobs';
@@ -80,23 +81,20 @@ export async function scrapeALC(): Promise<{
     await Promise.all(
       batch.map(async (rawJob) => {
         const detailUrl = `${ALC_API_BASE}/url/${rawJob.custom_url}?season=${encodeURIComponent(rawJob.season || 'Summer')}`;
-        const webUrl = `${ALC_WEB_BASE}/${(rawJob.season || 'summer').toLowerCase()}/${rawJob.custom_url}`;
+        const webUrl = `${ALC_WEB_BASE}/${(rawJob.season || 'summer').toLowerCase()}/${String(rawJob.custom_url || '').trim()}`;
         detailPagesFetched++;
 
         try {
           const detailRes = await fetch(detailUrl, { headers: HEADERS });
-          let jobDetail = rawJob;
-          if (detailRes.ok) {
-            const detailJson = await detailRes.json();
-            if (detailJson?.data) {
-              jobDetail = detailJson.data;
-            }
-          }
+          if (!detailRes.ok) throw new Error(`HTTP ${detailRes.status}`);
+          const detailJson = await detailRes.json();
+          if (!detailJson?.data) throw new Error('Missing job detail');
+          const jobDetail = detailJson.data;
 
           detailPagesParsed++;
 
           const employerName = jobDetail.job_name || rawJob.job_name || 'ALC Employer';
-          const season = (jobDetail.season || rawJob.season || 'Summer').includes('Summer') ? 'Summer 2027' : 'Spring 2027';
+          const season = seasonFromEvidence(jobDetail.season || rawJob.season || 'Unknown', jobDetail.start_earliest, jobDetail.end_latest);
           const state = jobDetail.state_name || rawJob.state_name || jobDetail.state_code;
           const city = jobDetail.city_name || rawJob.city_name;
           const imageUrl = jobDetail.image || rawJob.image || (jobDetail.image_paths && jobDetail.image_paths[0]);
@@ -106,28 +104,22 @@ export async function scrapeALC(): Promise<{
             : [
                 {
                   position: jobDetail.category || rawJob.category || 'General Staff',
-                  rate: jobDetail.pay_rate || rawJob.pay_rate || String(jobDetail.min_rate || 14),
-                  available: jobDetail.total_available_positions ?? 1,
-                  language_level: ['Intermediate']
+                  rate: jobDetail.pay_rate || rawJob.pay_rate,
+                  available: null,
+                  language_level: []
                 }
               ];
 
           const housingText = jobDetail.housing_costs
             ? `${jobDetail.housing_costs} (${jobDetail.house_type || 'Provided'})`
-            : jobDetail.house_type || 'มีที่พักจัดสรรให้';
-          let weeklyHousing: number | undefined;
-          if (jobDetail.housing_costs) {
-            const monthMatch = jobDetail.housing_costs.match(/(\d+)\s*\/\s*Month/i);
-            const weekMatch = jobDetail.housing_costs.match(/(\d+)\s*\/\s*(?:Week|wk)/i);
-            if (weekMatch) weeklyHousing = Number(weekMatch[1]);
-            else if (monthMatch) weeklyHousing = Math.round(Number(monthMatch[1]) / 4.33);
-          }
+            : jobDetail.house_type || undefined;
+          let weeklyHousing = parseWeeklyCost(jobDetail.housing_costs);
 
           for (const pos of rawPositions) {
             const posName = pos.position || 'General Position';
             const rateStr = String(pos.rate || jobDetail.pay_rate || '');
             const rateMatch = rateStr.match(/(\d+(?:\.\d+)?)/);
-            const wageHourly = rateMatch ? Number(rateMatch[1]) : (jobDetail.min_rate || 14);
+            const wageHourly = rateMatch ? Number(rateMatch[1]) : undefined;
             const tipsIncluded = /tips/i.test(rateStr);
 
             let availSlots: number | null = null;
@@ -136,7 +128,7 @@ export async function scrapeALC(): Promise<{
 
             if (rawAvail != null && rawAvail !== '') {
               const num = Number(rawAvail);
-              if (!isNaN(num)) {
+              if (Number.isInteger(num) && num >= 0) {
                 if (num === 0) {
                   slotType = 'FULL';
                   availSlots = 0;
@@ -153,14 +145,16 @@ export async function scrapeALC(): Promise<{
               slotTypes.unknown++;
             }
 
-            let status: JobStatus = 'OPEN';
+            let status: JobStatus = 'UNKNOWN';
             if (slotType === 'FULL' || availSlots === 0) {
               status = 'FULL';
             } else if (availSlots != null && availSlots <= 2) {
               status = 'LOW_SLOTS';
+            } else if (availSlots != null && availSlots > 2) {
+              status = 'OPEN';
             }
 
-            let englishLevel = 'Intermediate';
+            let englishLevel: string | undefined;
             if (Array.isArray(pos.language_level) && pos.language_level.length > 0) {
               englishLevel = pos.language_level.join(', ');
             }
@@ -178,7 +172,7 @@ export async function scrapeALC(): Promise<{
                 name: posName,
                 category: categorizePosition(posName),
                 wageHourly,
-                wageText: rateStr ? (rateStr.startsWith('$') ? rateStr : `$${rateStr}/hr`) : `$${wageHourly}/hr`,
+                wageText: rateStr ? (rateStr.startsWith('$') ? rateStr : `$${rateStr}/hr`) : undefined,
                 tips: tipsIncluded,
                 availableSlots: availSlots,
                 slotType,

@@ -2,6 +2,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useDeferredValue } from 'react';
+import { verifiedGroupCapacity } from '@/lib/dataIntegrity';
 import type { Job, JobStatus } from '@/lib/types';
 
 const statusLabels: Record<JobStatus, { label: string; class: string }> = {
@@ -176,11 +177,11 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
 
       // Chip filters
       if (chipNewOnly && !isRecentJob(j.firstSeenAt || j.lastSeenAt, 48)) return false;
-      if (chipGroup3 && (j.availableSlots != null ? j.availableSlots < 3 : false)) return false;
+      if (chipGroup3 && verifiedGroupCapacity(j) < 3) return false;
       if (chipKitchen && j.category !== 'KITCHEN_BOH' && j.category !== 'FOOD_BOH') return false;
       if (chipHighWage && (j.wageMin || 0) < 16) return false;
       if (chipAlaska && j.state !== 'Alaska' && j.state !== 'AK') return false;
-      if (chipOpenOnly && j.status === 'FULL') return false;
+      if (chipOpenOnly && !['OPEN', 'LOW_SLOTS', 'LIMITED'].includes(j.status)) return false;
 
       return true;
     }).sort((a, b) => {
@@ -200,7 +201,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
 
   // Statistics
   const openCount = useMemo(() => initialJobs.filter((j) => j.status === 'OPEN' || j.status === 'LOW_SLOTS').length, [initialJobs]);
-  const group3Count = useMemo(() => initialJobs.filter((j) => j.availableSlots == null || j.availableSlots >= 3).length, [initialJobs]);
+  const group3Count = useMemo(() => initialJobs.filter((j) => verifiedGroupCapacity(j) >= 3).length, [initialJobs]);
   const totalAgencies = useMemo(() => new Set(initialJobs.map((j) => j.agency)).size, [initialJobs]);
 
   const resetFilters = () => {
@@ -223,11 +224,11 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
       {/* Hero Section */}
       <section className="hero">
         <div>
-          <span className="eyebrow-chip">⚡ MULTI-AGENCY RADAR · SUMMER 2027</span>
-          <h1>เรดาร์รวมงาน Work & Travel 2027</h1>
+          <span className="eyebrow-chip">⚡ MULTI-AGENCY RADAR · SOURCE DATA</span>
+          <h1>เรดาร์รวมงาน Work & Travel</h1><p>ปีและเงื่อนไขตามต้นทาง · Fit Score เป็นการประมาณจากกฎของระบบ ไม่ใช่คะแนนรีวิวหรือการรับประกันงานที่ 2</p>
           <p>
-            รวมงานสาธารณะอัตโนมัติจาก {totalAgencies} Agency ชั้นนำ (OEG, New Step, ALC, IEE, iHappy, ACADEX, Interchange, I4 Group) รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
-            เปรียบเทียบค่าแรง ที่พัก จำนวนว่างจริง และภาพสถานที่ได้ในที่เดียว
+            รวมงานสาธารณะอัตโนมัติจาก {totalAgencies} Agency ที่มีข้อมูลอ่านได้ รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
+            เปรียบเทียบค่าแรง ที่พัก และจำนวนที่ต้นทางระบุได้ในที่เดียว
           </p>
           <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
             <a href="/fees" className="preset-chip active" style={{ textDecoration: 'none', padding: '6px 14px', fontSize: 13, background: '#fff7ed', color: '#c2410c', borderColor: '#fdba74' }}>
@@ -240,7 +241,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
         </div>
         <div className="live-badge">
           <span className="pulse-dot" />
-          Auto-Sync ทุก 1 ชม. ({totalAgencies} Agencies)
+          ข้อมูลตามประกาศ ({totalAgencies} Agencies)
         </div>
       </section>
 
@@ -248,12 +249,12 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
       <div className="sync-status-bar">
         <div className="sync-status-item">
           <span className="pulse-dot" />
-          <span>รอบดึงงาน: <b>ดึงข้อมูลใหม่อัตโนมัติทุก 1 ชั่วโมง (Hourly Auto-Sync)</b></span>
+          <span>ความสดของข้อมูล: <b>ตรวจวันที่อ่านต้นทางและสถานะแหล่งข้อมูลใน Sources</b></span>
         </div>
         {latestArrivalIso && (
           <div className="sync-status-item">
             <span>🕒</span>
-            <span>ตรวจพบงานใหม่ล่าสุดเมื่อ: <b style={{ color: 'var(--orange)' }}>{formatArrivalDateTime(latestArrivalIso)}</b> {formatTimeAgo(latestArrivalIso) && <small style={{ color: 'var(--text-muted)' }}>({formatTimeAgo(latestArrivalIso)})</small>}</span>
+            <span>บันทึกข้อมูลเข้าเรดาร์ล่าสุดเมื่อ: <b style={{ color: 'var(--orange)' }}>{formatArrivalDateTime(latestArrivalIso)}</b> {formatTimeAgo(latestArrivalIso) && <small style={{ color: 'var(--text-muted)' }}>({formatTimeAgo(latestArrivalIso)})</small>}</span>
           </div>
         )}
         <div className="sync-status-item">
@@ -489,9 +490,9 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
   const agencyClass = job.agency.toLowerCase().replace(/\s+/g, '');
   const statusInfo = statusLabels[job.status] || { label: job.status, class: 'unknown' };
 
-  const isGroup3 = job.availableSlots == null || job.availableSlots >= 3;
+  const isGroup3 = verifiedGroupCapacity(job) >= 3;
   const isRecent = isRecentJob(job.firstSeenAt || job.lastSeenAt, 48);
-  const locationDisplay = [job.city, job.state].filter(Boolean).join(', ') || 'USA';
+  const locationDisplay = job.locationText || [job.city, job.state].filter(Boolean).join(', ') || 'ต้นทางไม่ระบุที่ตั้ง';
 
   return (
     <article className="promax-card" onClick={onSelect}>
@@ -528,6 +529,8 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
 
       {/* Card Content */}
       <div className="card-content">
+        <small>📆 {job.season} · ข้อมูลตามประกาศต้นทาง</small>
+        {imgSrc === fallbackImg && <small> · ภาพประกอบ</small>}
         <h2 className="card-employer-title" title={job.employer}>
           {job.employer}
         </h2>
@@ -551,14 +554,14 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
           <div className="metric-cell">
             <span className="metric-cell-label">🏠 ที่พัก</span>
             <span className="metric-cell-val">
-              {job.housingWeekly ? `$${job.housingWeekly}/wk` : job.housingText ? job.housingText.slice(0, 18) : 'มีจัดสรรให้'}
+              {job.housingWeekly != null ? `$${job.housingWeekly}/wk` : job.housingText ? job.housingText.slice(0, 18) : 'ไม่ระบุ'}
             </span>
           </div>
 
           <div className="metric-cell">
             <span className="metric-cell-label">🔢 จำนวนที่ว่าง</span>
             <span className={`metric-cell-val ${job.status === 'OPEN' ? 'val-green' : ''}`}>
-              {job.availabilityText || (job.availableSlots != null ? `${job.availableSlots} คน` : 'เปิดรับ')}
+              {job.availabilityText || (job.availableSlots != null ? `${job.availableSlots} คน` : 'ไม่ระบุ')}
             </span>
           </div>
 
@@ -643,7 +646,7 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
           <div style={{ color: 'var(--sky-blue)', fontSize: 16, fontWeight: 700, marginBottom: 20 }}>
             {job.position || 'General Position'}
             <span style={{ color: 'var(--text-dim)', fontWeight: 400, marginLeft: 8 }}>
-              · {job.season}
+              · {job.season}{job.notes && <p>{job.notes}</p>}
             </span>
           </div>
 
@@ -663,7 +666,7 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
             <div className="metric-cell">
               <span className="metric-cell-label">⏱️ ชั่วโมงทำงาน / Hours</span>
-              <span className="metric-cell-val">{job.hoursText || '32-40 ชม./สัปดาห์'}</span>
+              <span className="metric-cell-val">{job.hoursText || 'ต้นทางไม่ระบุ'}</span>
             </div>
             <div className="metric-cell">
               <span className="metric-cell-label">🗣️ ทักษะภาษาอังกฤษ</span>
@@ -676,19 +679,19 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="metric-cell">
               <span className="metric-cell-label">ค่าที่พักโดยประมาณ</span>
               <span className="metric-cell-val">
-                {job.housingWeekly ? `$${job.housingWeekly}/สัปดาห์` : 'ตามประกาศนายจ้าง'}
+                {job.housingWeekly != null ? `$${job.housingWeekly}/สัปดาห์` : 'ตามประกาศนายจ้าง'}
               </span>
             </div>
             <div className="metric-cell">
               <span className="metric-cell-label">อาหาร (Meal Plan)</span>
               <span className="metric-cell-val">
-                {job.mealsIncluded ? '🍱 มีอาหารจัดเตรียม/ส่วนลด' : 'ซื้อเองหรือตามสะดวก'}
+                {job.mealsText || (job.mealsIncluded === true ? '🍱 รวมอาหารตามประกาศ' : job.mealsIncluded === false ? 'ไม่รวมอาหารฟรี' : 'ไม่ระบุ')}
               </span>
             </div>
             <div className="metric-cell" style={{ gridColumn: 'span 2' }}>
               <span className="metric-cell-label">รายละเอียดที่พัก</span>
               <span className="metric-cell-val" style={{ whiteSpace: 'normal', lineHeight: 1.5 }}>
-                {job.housingText || 'มีที่พักจัดสรรให้โดยนายจ้างหรือประสานงานผ่าน Agency'}
+                {job.housingText || 'ต้นทางไม่ระบุรายละเอียดที่พัก'}
               </span>
             </div>
           </div>
@@ -697,11 +700,11 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
           <div className="modal-details-grid">
             <div className="metric-cell">
               <span className="metric-cell-label">วันเริ่มงาน</span>
-              <span className="metric-cell-val">{job.startText || 'พฤษภาคม - มิถุนายน 2027'}</span>
+              <span className="metric-cell-val">{job.startText || 'ต้นทางไม่ระบุ'}</span>
             </div>
             <div className="metric-cell">
               <span className="metric-cell-label">วันสิ้นสุดงาน</span>
-              <span className="metric-cell-val">{job.endText || 'สิงหาคม - กันยายน 2027'}</span>
+              <span className="metric-cell-val">{job.endText || 'ต้นทางไม่ระบุ'}</span>
             </div>
           </div>
 

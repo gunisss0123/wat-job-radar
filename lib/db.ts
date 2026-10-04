@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Job, JobEvent, SourceRun } from './types';
-import { seedJobs } from './seed';
 import { loadLocalStore } from './engine';
 import { enrichForProfile } from './profile';
+import { snapshotEvents } from './history';
 
 function url() {
   return process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -113,10 +113,10 @@ export async function getJobs(): Promise<Job[]> {
     return memoryCachedJobs;
   }
 
-  const db = publicDb();
+  const db = Object.keys(loadLocalStore().positions).length ? null : publicDb();
   if (db) {
     const { data, error } = await db.from('wat_jobs').select('*').eq('is_hidden', false).eq('is_stale', false).order('fit_score', { ascending: false });
-    if (!error && data && data.length > 0) return data.map(fromRow);
+    if (!error && data) return data.map(fromRow);
   }
 
   // Load from local store (crawled data)
@@ -138,21 +138,27 @@ export async function getJobs(): Promise<Job[]> {
         season: ae.season,
         state: emp?.state,
         city: emp?.city,
-        locationText: `${emp?.city || ''}, ${emp?.state || ''}`.trim(),
+        locationText: ae.locationRaw || [emp?.city, emp?.state].filter(Boolean).join(', '),
         position: pos.positionName,
         category: pos.canonicalCategory,
+        slotType: pos.slotType,
         wageMin: pos.wageHourly,
         wageMax: pos.wageMax,
         wageText: pos.wageText,
         housingWeekly: housing?.weeklyCost,
         housingText: housing?.housingText,
         mealsIncluded: housing?.mealsIncluded,
+        mealsText: housing?.mealsText,
+        hoursMin: pos.hoursMin,
+        hoursMax: pos.hoursMax,
+        hoursText: pos.hoursText,
         availableSlots: pos.availableSlots,
-        availabilityText: pos.rawSlotText || pos.availabilityText,
+        availabilityText: pos.availabilityText || pos.rawSlotText,
         status: pos.status,
         startText: ae.startDateText,
         endText: ae.endDateText,
         englishFit: pos.englishLevel,
+        notes: ae.sourceNotes,
         sourceUrl: ae.sourceUrl,
         imageUrl: ae.imageUrl || emp?.imageUrl,
         firstSeenAt: pos.firstSeenAt,
@@ -170,11 +176,11 @@ export async function getJobs(): Promise<Job[]> {
     return sorted;
   }
 
-  return seedJobs;
+  return [];
 }
 
 export async function getEvents(limit = 100): Promise<JobEvent[]> {
-  const db = publicDb();
+  const db = loadLocalStore().snapshots.length ? null : publicDb();
   if (db) {
     const { data } = await db.from('wat_job_events').select('*').order('created_at', { ascending: false }).limit(limit);
     if (data && data.length > 0) {
@@ -194,7 +200,7 @@ export async function getEvents(limit = 100): Promise<JobEvent[]> {
 
   const store = loadLocalStore();
   if (store.snapshots.length > 0) {
-    return store.snapshots.slice(-limit).reverse().map((s, idx) => {
+    return snapshotEvents(store.snapshots).filter(s => !store.positions[s.positionId]?.isStale).slice(-limit).reverse().map((s, idx) => {
       const pos = store.positions[s.positionId];
       const ae = pos ? store.agencyEmployers[pos.agencyEmployerId] : undefined;
       return {
@@ -203,9 +209,9 @@ export async function getEvents(limit = 100): Promise<JobEvent[]> {
         agency: ae?.agencyId || 'OEG',
         employer: ae?.sourceEmployerName || 'Employer',
         position: pos?.positionName,
-        eventType: s.status === 'FULL' ? 'STATUS_CHANGE' : 'SLOT_CHANGE',
-        beforeValue: '0',
-        afterValue: String(s.availableSlots ?? s.status),
+        eventType: s.eventType,
+        beforeValue: s.beforeValue,
+        afterValue: s.afterValue,
         createdAt: s.capturedAt
       };
     });
@@ -215,7 +221,7 @@ export async function getEvents(limit = 100): Promise<JobEvent[]> {
 }
 
 export async function getSourceRuns(): Promise<SourceRun[]> {
-  const db = publicDb();
+  const db = Object.keys(loadLocalStore().sourceHealth).length ? null : publicDb();
   if (db) {
     const { data } = await db.from('wat_source_runs').select('*').order('ran_at', { ascending: false }).limit(40);
     if (data && data.length > 0) {
@@ -246,12 +252,12 @@ export async function getSourceRuns(): Promise<SourceRun[]> {
       source: sh.agencyId,
       health: sh.lastStatus === 'Healthy' ? 'OK' : 'ERROR',
       jobCount: sh.positionsCount,
-      durationMs: 2500,
-      ranAt: sh.lastSyncAt || new Date().toISOString()
+      errorText: sh.lastError,
+      ranAt: sh.lastSyncAt || sh.updatedAt
     }));
   }
 
-  return [{ source: 'Demo', health: 'MANUAL', jobCount: seedJobs.length, ranAt: new Date().toISOString() }];
+  return [];
 }
 
 export async function saveRun(jobs: Job[], run: SourceRun) {

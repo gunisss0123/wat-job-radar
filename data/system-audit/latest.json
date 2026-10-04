@@ -1,0 +1,558 @@
+{
+  "checkedAt": "2026-10-04T15:21:41.837Z",
+  "scope": "Full local store profile; live connector crawl; no Supabase or messaging writes",
+  "appliedLocally": true,
+  "before": {
+    "updatedAt": "2026-10-04T11:56:10.325Z",
+    "positions": 2240,
+    "orphanPositions": 0,
+    "byAgency": {
+      "OEG": {
+        "total": 129,
+        "active": 129,
+        "stale": 0,
+        "seasons": {
+          "Spring 2027": 47,
+          "Summer 2027": 82
+        },
+        "statuses": {
+          "FULL": 108,
+          "OPEN": 13,
+          "LOW_SLOTS": 8
+        },
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "New Step": {
+        "total": 183,
+        "active": 183,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 183
+        },
+        "statuses": {
+          "OPEN": 40,
+          "FULL": 107,
+          "LOW_SLOTS": 4,
+          "UNKNOWN": 32
+        },
+        "unknownSlots": 32,
+        "unknownWage": 32,
+        "objectDates": 183,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "ALC": {
+        "total": 629,
+        "active": 629,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 423,
+          "Spring 2027": 206
+        },
+        "statuses": {
+          "OPEN": 140,
+          "FULL": 328,
+          "LOW_SLOTS": 161
+        },
+        "unknownSlots": 54,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "IEE": {
+        "total": 254,
+        "active": 254,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 254
+        },
+        "statuses": {
+          "OPEN": 254
+        },
+        "unknownSlots": 254,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "iHappy": {
+        "total": 556,
+        "active": 556,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 556
+        },
+        "statuses": {
+          "OPEN": 531,
+          "LOW_SLOTS": 25
+        },
+        "unknownSlots": 523,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "ACADEX": {
+        "total": 439,
+        "active": 439,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 439
+        },
+        "statuses": {
+          "UNKNOWN": 439
+        },
+        "unknownSlots": 439,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "Interchange": {
+        "total": 25,
+        "active": 25,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 25
+        },
+        "statuses": {
+          "OPEN": 25
+        },
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 3,
+        "stockImages": 25
+      },
+      "I4 Group": {
+        "total": 25,
+        "active": 25,
+        "stale": 0,
+        "seasons": {
+          "Summer 2027": 25
+        },
+        "statuses": {
+          "OPEN": 25
+        },
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 25
+      }
+    }
+  },
+  "after": {
+    "updatedAt": "2026-10-04T15:21:41.834Z",
+    "positions": 3953,
+    "orphanPositions": 0,
+    "byAgency": {
+      "OEG": {
+        "total": 258,
+        "active": 129,
+        "stale": 129,
+        "seasons": {
+          "Spring 2027": 44,
+          "Spring (ไม่ระบุปี)": 3,
+          "Summer 2027": 77,
+          "Summer 2026": 5
+        },
+        "statuses": {
+          "FULL": 108,
+          "LOW_SLOTS": 8,
+          "OPEN": 13
+        },
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "New Step": {
+        "total": 372,
+        "active": 189,
+        "stale": 183,
+        "seasons": {
+          "Summer (ไม่ระบุปี)": 189
+        },
+        "statuses": {
+          "OPEN": 43,
+          "FULL": 109,
+          "LOW_SLOTS": 5,
+          "UNKNOWN": 32
+        },
+        "unknownSlots": 32,
+        "unknownWage": 32,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "ALC": {
+        "total": 1257,
+        "active": 628,
+        "stale": 629,
+        "seasons": {
+          "Summer 2027": 188,
+          "Spring 2027": 128,
+          "Summer (ไม่ระบุปี)": 5,
+          "Summer 2026": 220,
+          "Spring 2026": 64,
+          "Summer 2025": 9,
+          "Spring 2025": 14
+        },
+        "statuses": {
+          "OPEN": 86,
+          "FULL": 328,
+          "LOW_SLOTS": 160,
+          "UNKNOWN": 54
+        },
+        "unknownSlots": 54,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "IEE": {
+        "total": 508,
+        "active": 254,
+        "stale": 254,
+        "seasons": {
+          "Spring 2027": 33,
+          "Summer / Spring 2027": 82,
+          "Spring (ไม่ระบุปี)": 15,
+          "Summer (ไม่ระบุปี)": 113,
+          "Summer / Spring (ไม่ระบุปี)": 6,
+          "Summer 2027": 5
+        },
+        "statuses": {
+          "UNKNOWN": 254
+        },
+        "unknownSlots": 254,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "iHappy": {
+        "total": 591,
+        "active": 35,
+        "stale": 556,
+        "seasons": {
+          "Summer 2027": 35
+        },
+        "statuses": {
+          "OPEN": 8,
+          "LOW_SLOTS": 25,
+          "FULL": 2
+        },
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "ACADEX": {
+        "total": 917,
+        "active": 456,
+        "stale": 461,
+        "seasons": {
+          "Summer 2027": 456
+        },
+        "statuses": {
+          "UNKNOWN": 456
+        },
+        "unknownSlots": 456,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "Interchange": {
+        "total": 25,
+        "active": 0,
+        "stale": 25,
+        "seasons": {},
+        "statuses": {},
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      },
+      "I4 Group": {
+        "total": 25,
+        "active": 0,
+        "stale": 25,
+        "seasons": {},
+        "statuses": {},
+        "unknownSlots": 0,
+        "unknownWage": 0,
+        "objectDates": 0,
+        "oldYearUrls": 0,
+        "stockImages": 0
+      }
+    }
+  },
+  "reports": [
+    {
+      "agency": "OEG",
+      "connectorType": "HTML",
+      "season": "Summer/Spring 2027",
+      "indexPagesDiscovered": 1,
+      "jobUrlsFound": 50,
+      "uniqueJobUrls": 50,
+      "duplicateUrls": 0,
+      "employersFound": 50,
+      "detailPagesFetched": 50,
+      "detailPagesParsed": 50,
+      "positionsFound": 129,
+      "positionsSaved": 129,
+      "failedPages": 0,
+      "failedUrls": [],
+      "discoveryCoveragePct": 100,
+      "parseCoveragePct": 100,
+      "coveragePct": 100,
+      "slotTypes": {
+        "exactNumeric": 21,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 108,
+        "unknown": 0
+      },
+      "durationMs": 2611,
+      "status": "SUCCESS",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "New Step",
+      "connectorType": "API",
+      "season": "Summer 2027",
+      "indexPagesDiscovered": 1,
+      "jobUrlsFound": 143,
+      "uniqueJobUrls": 143,
+      "duplicateUrls": 0,
+      "employersFound": 143,
+      "detailPagesFetched": 143,
+      "detailPagesParsed": 143,
+      "positionsFound": 189,
+      "positionsSaved": 189,
+      "failedPages": 0,
+      "failedUrls": [],
+      "discoveryCoveragePct": 100,
+      "parseCoveragePct": 100,
+      "coveragePct": 100,
+      "slotTypes": {
+        "exactNumeric": 16,
+        "moreThanX": 27,
+        "upToX": 114,
+        "full": 0,
+        "unknown": 32
+      },
+      "durationMs": 7395,
+      "status": "SUCCESS",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "ALC",
+      "connectorType": "API",
+      "season": "Summer/Spring 2027",
+      "indexPagesDiscovered": 4,
+      "jobUrlsFound": 384,
+      "uniqueJobUrls": 384,
+      "duplicateUrls": 0,
+      "employersFound": 384,
+      "detailPagesFetched": 384,
+      "detailPagesParsed": 383,
+      "positionsFound": 628,
+      "positionsSaved": 628,
+      "failedPages": 1,
+      "failedUrls": [
+        {
+          "url": "https://api.myalcapp.com/api/v1/web/wat/job/url/null?season=Summer",
+          "error": "Missing job detail"
+        }
+      ],
+      "discoveryCoveragePct": 100,
+      "parseCoveragePct": 99.73958333333334,
+      "coveragePct": 99.73958333333334,
+      "slotTypes": {
+        "exactNumeric": 246,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 328,
+        "unknown": 54
+      },
+      "durationMs": 10428,
+      "status": "WARNING",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "IEE",
+      "connectorType": "HTML",
+      "season": "Summer 2027",
+      "indexPagesDiscovered": 1,
+      "jobUrlsFound": 142,
+      "uniqueJobUrls": 71,
+      "duplicateUrls": 71,
+      "employersFound": 71,
+      "detailPagesFetched": 71,
+      "detailPagesParsed": 71,
+      "positionsFound": 254,
+      "positionsSaved": 254,
+      "failedPages": 0,
+      "failedUrls": [],
+      "discoveryCoveragePct": 100,
+      "parseCoveragePct": 100,
+      "coveragePct": 100,
+      "slotTypes": {
+        "exactNumeric": 0,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 0,
+        "unknown": 254
+      },
+      "durationMs": 14712,
+      "status": "SUCCESS",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "iHappy",
+      "connectorType": "HTML",
+      "season": "Summer 2027",
+      "indexPagesDiscovered": 1,
+      "jobUrlsFound": 556,
+      "uniqueJobUrls": 35,
+      "duplicateUrls": 0,
+      "employersFound": 32,
+      "detailPagesFetched": 1,
+      "detailPagesParsed": 1,
+      "positionsFound": 35,
+      "positionsSaved": 35,
+      "failedPages": 0,
+      "failedUrls": [],
+      "discoveryCoveragePct": 100,
+      "parseCoveragePct": 100,
+      "coveragePct": 100,
+      "slotTypes": {
+        "exactNumeric": 33,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 0,
+        "unknown": 2
+      },
+      "durationMs": 2199,
+      "status": "SUCCESS",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "ACADEX",
+      "connectorType": "HTML",
+      "season": "Summer 2027",
+      "indexPagesDiscovered": 1,
+      "jobUrlsFound": 574,
+      "uniqueJobUrls": 287,
+      "duplicateUrls": 287,
+      "employersFound": 248,
+      "detailPagesFetched": 287,
+      "detailPagesParsed": 287,
+      "positionsFound": 456,
+      "positionsSaved": 456,
+      "failedPages": 0,
+      "failedUrls": [],
+      "discoveryCoveragePct": 100,
+      "parseCoveragePct": 100,
+      "coveragePct": 100,
+      "slotTypes": {
+        "exactNumeric": 0,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 0,
+        "unknown": 287
+      },
+      "durationMs": 29908,
+      "status": "SUCCESS",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "Interchange",
+      "connectorType": "TBD",
+      "season": "ไม่ยืนยันปี",
+      "indexPagesDiscovered": 0,
+      "jobUrlsFound": 0,
+      "uniqueJobUrls": 0,
+      "duplicateUrls": 0,
+      "employersFound": 0,
+      "detailPagesFetched": 0,
+      "detailPagesParsed": 0,
+      "positionsFound": 0,
+      "positionsSaved": 0,
+      "failedPages": 1,
+      "failedUrls": [
+        {
+          "url": "https://maininterchange.com/work_and_travel_summer",
+          "error": "Connector Needed: removed unverified hardcoded catalog"
+        }
+      ],
+      "discoveryCoveragePct": 0,
+      "parseCoveragePct": 0,
+      "coveragePct": 0,
+      "slotTypes": {
+        "exactNumeric": 0,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 0,
+        "unknown": 0
+      },
+      "durationMs": 0,
+      "status": "ERROR",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    },
+    {
+      "agency": "I4 Group",
+      "connectorType": "TBD",
+      "season": "ไม่ยืนยันปี",
+      "indexPagesDiscovered": 0,
+      "jobUrlsFound": 0,
+      "uniqueJobUrls": 0,
+      "duplicateUrls": 0,
+      "employersFound": 0,
+      "detailPagesFetched": 0,
+      "detailPagesParsed": 0,
+      "positionsFound": 0,
+      "positionsSaved": 0,
+      "failedPages": 1,
+      "failedUrls": [
+        {
+          "url": "https://i4gs.com/apply-online/",
+          "error": "Connector Needed: removed unverified hardcoded catalog"
+        }
+      ],
+      "discoveryCoveragePct": 0,
+      "parseCoveragePct": 0,
+      "coveragePct": 0,
+      "slotTypes": {
+        "exactNumeric": 0,
+        "moreThanX": 0,
+        "upToX": 0,
+        "full": 0,
+        "unknown": 0
+      },
+      "durationMs": 0,
+      "status": "ERROR",
+      "duplicateOfferPositions": 0,
+      "appliedLocally": true
+    }
+  ]
+}

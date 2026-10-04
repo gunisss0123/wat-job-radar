@@ -10,12 +10,13 @@ import { scrapeI4Group } from './i4group';
 import { enrichForProfile } from '../profile';
 import { slug } from '../common';
 import { ingestScrapedRecords } from '../engine';
+import { recordIdentity, positionIdentity, canAgeMissingRecords } from '../dataIntegrity';
 
 export type ScraperName = 'OEG' | 'New Step' | 'ALC' | 'IEE' | 'iHappy' | 'ACADEX' | 'Interchange' | 'I4 Group';
 
 export function scrapedRecordToLegacyJob(record: ScrapedJobRecord): Job {
   return {
-    id: slug(`${record.agency}-${record.sourceId || record.employer}-${record.position.name}`),
+    id: `${recordIdentity(record)}-${positionIdentity(record.position)}`,
     agency: record.agency,
     employer: record.employer,
     season: record.season,
@@ -30,6 +31,12 @@ export function scrapedRecordToLegacyJob(record: ScrapedJobRecord): Job {
     housingWeekly: record.housing?.weeklyCost,
     housingText: record.housing?.housingText,
     mealsIncluded: record.housing?.mealsIncluded,
+    mealsText: record.housing?.mealsText,
+    hoursMin: record.position.hoursMin,
+    hoursMax: record.position.hoursMax,
+    hoursText: record.position.hoursText,
+    slotType: record.position.slotType,
+    notes: record.sourceNotes,
     availableSlots: record.position.availableSlots,
     availabilityText: record.position.availabilityText || record.position.rawSlotText,
     status: record.position.status,
@@ -53,7 +60,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -70,7 +77,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -87,7 +94,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -104,7 +111,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -121,7 +128,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -138,7 +145,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -155,7 +162,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()
@@ -172,7 +179,7 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
         jobs,
         run: {
           source: name,
-          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          health: canAgeMissingRecords(report) ? 'OK' : 'ERROR',
           jobCount: records.length,
           durationMs: Date.now() - started,
           ranAt: new Date().toISOString()

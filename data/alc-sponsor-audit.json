@@ -1,0 +1,60 @@
+{
+  "checkedOn": "2026-10-04",
+  "url": "https://api.myalcapp.com/api/v1/web/wat/job",
+  "pages": 4,
+  "jobCount": 384,
+  "sponsors": [
+    "AAG",
+    "AAG-Self",
+    "AWA",
+    "Intrax",
+    "Intrax-Self",
+    "Janus",
+    "Janus-Self"
+  ],
+  "samples": [
+    {
+      "sponsor": "AAG",
+      "employer": "Premier Pool Management Inc",
+      "season": "Summer",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/summer/premier-pool-management-inc-md"
+    },
+    {
+      "sponsor": "AAG-Self",
+      "employer": "49th State Brewing",
+      "season": "Summer",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/summer/49th-state-brewing-ak"
+    },
+    {
+      "sponsor": "AWA",
+      "employer": "THE SHIRT FACTORY OF HAMPTON BEACH",
+      "season": "Spring",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/spring/the-shirt-factory-of-hampton-beach-nh"
+    },
+    {
+      "sponsor": "Intrax",
+      "employer": "Santa Cruz Beach Boardwalk",
+      "season": "Summer",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/summer/santa-cruz-beach-boardwalk"
+    },
+    {
+      "sponsor": "Intrax-Self",
+      "employer": "Steak n Shake",
+      "season": "Summer",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/summer/steak-n-shake-mo"
+    },
+    {
+      "sponsor": "Janus",
+      "employer": "Premier Aquatics",
+      "season": "Summer",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/summer/premier-aquatics-va"
+    },
+    {
+      "sponsor": "Janus-Self",
+      "employer": "The Grand Hotel Mackinac Island",
+      "season": "Spring",
+      "sourceUrl": "https://myalcapp.com/work-and-travel/jobs/spring/grand-hotel-mackinac-island-mi"
+    }
+  ],
+  "note": "API season labels do not specify a program year. Sponsor labels are preserved as published; not a complete list of designated legal entities."
+}

@@ -36,7 +36,7 @@ async function fetchHtml(url: string, retries = 2): Promise<string> {
   throw new Error(`Failed to fetch ${url}`);
 }
 
-export async function scrapeIHappy(): Promise<{
+export async function scrapeIHappy(sourceHtml?: string): Promise<{
   records: ScrapedJobRecord[];
   report: CoverageReport;
 }> {
@@ -54,7 +54,7 @@ export async function scrapeIHappy(): Promise<{
 
   let html = '';
   try {
-    html = await fetchHtml(IHAPPY_SUMMER_URL);
+    html = sourceHtml ?? await fetchHtml(IHAPPY_SUMMER_URL);
   } catch (err: any) {
     failedUrls.push({ url: IHAPPY_SUMMER_URL, error: err.message });
     return {
@@ -94,8 +94,11 @@ export async function scrapeIHappy(): Promise<{
       const cols = $r.find('td');
       if (cols.length < 9) return;
 
-      const statusImg = $r.find('.column-1 img').attr('src') || '';
-      const isAvailable = !statusImg.includes('not-available') && !statusImg.includes('closed');
+      const seasonText = $r.find('.column-5').text().trim();
+      if (!/Summer.*2027/i.test(seasonText)) return;
+      const statusImg = ($r.find('.column-1 img').attr('src') || '').trim();
+      const isFull = /(?:full|not-available|closed)[^/]*\.png/i.test(statusImg);
+      const isAvailable = !isFull && /\/available[^/]*\.png/i.test(statusImg);
 
       const logoImg = $r.find('.column-4 img').attr('src')?.trim() || '';
       const employerName = $r.find('.column-6').text().trim();
@@ -130,12 +133,13 @@ export async function scrapeIHappy(): Promise<{
 
       const rateText = $r.find('.column-10').text().trim();
       const wageMatch = rateText.match(/(\d+(?:\.\d+)?)/);
-      const wageHourly = wageMatch ? Number(wageMatch[1]) : 15;
+      const wageHourly = wageMatch ? Number(wageMatch[1]) : undefined;
       const tipsIncluded = /tips/i.test(rateText);
 
-      const detailLink = $r.find('.column-11 a').attr('href') || IHAPPY_SUMMER_URL;
+      const detailLink = ($r.find('.column-11 a').attr('href') || IHAPPY_SUMMER_URL).trim();
 
-      let status: JobStatus = isAvailable ? 'OPEN' : 'FULL';
+      let status: JobStatus = isFull || availSlots === 0 ? 'FULL' : isAvailable ? 'OPEN' : 'UNKNOWN';
+      if (status === 'FULL') { availSlots = 0; slotType = 'FULL'; }
       if (status === 'OPEN' && availSlots != null && availSlots <= 2) {
         status = 'LOW_SLOTS';
       }
@@ -143,7 +147,7 @@ export async function scrapeIHappy(): Promise<{
       records.push({
         agency: 'iHappy',
         employer: employerName,
-        sourceId: `ihappy-${employerName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-${i}`,
+        sourceId: `ihappy-${employerName}-${city}-${state}-${posName}`,
         city,
         state,
         season: 'Summer 2027',
@@ -152,17 +156,17 @@ export async function scrapeIHappy(): Promise<{
           name: posName || 'Staff',
           category: categorizePosition(posName),
           wageHourly,
-          wageText: rateText.startsWith('$') ? rateText : `$${rateText}`,
+          wageText: rateText || undefined,
           tips: tipsIncluded,
           availableSlots: availSlots,
           slotType,
           rawSlotText,
           availabilityText: availSlots != null ? `${availSlots} ตำแหน่ง` : (isAvailable ? 'เปิดรับ' : 'เต็ม'),
-          englishLevel: 'Intermediate',
+          englishLevel: undefined,
           status
         },
         housing: {
-          housingText: 'มีที่พักจัดสรรให้โดยนายจ้างหรือประสานงานผ่าน iHappy'
+          housingText: undefined
         },
         sourceUrl: detailLink,
         imageUrl: logoImg,
@@ -182,11 +186,11 @@ export async function scrapeIHappy(): Promise<{
     jobUrlsFound: totalFound,
     uniqueJobUrls: records.length,
     duplicateUrls: 0,
-    employersFound: records.length,
+    employersFound: new Set(records.map(r => `${r.employer}|${r.city}|${r.state}`)).size,
     detailPagesFetched: 1,
     detailPagesParsed: 1,
     positionsFound: records.length,
-    positionsSaved: records.length,
+    positionsSaved: 0,
     failedPages: failedUrls.length,
     failedUrls,
     discoveryCoveragePct: 100,

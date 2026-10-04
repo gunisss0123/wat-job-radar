@@ -11,9 +11,33 @@ import type {
 import { categorizePosition, cleanEmployerName } from '../normalize';
 import { absolute, uniq, stateFromCode, statusFrom, baseJob } from './common';
 import { slug } from '../common';
+import { parseWeeklyCost, mealsFromEvidence } from '../dataIntegrity';
 
 const ACADEX_LIST_URL = 'https://www.acadexthailand.com/program/work-and-travel-summer/';
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+
+export function parseAcadexAvailability(html: string) {
+  const $ = cheerio.load(html);
+  const result = new Map<string, { slots: number | null; slotType: SlotSemanticType; status: JobStatus; text: string }>();
+  $('.bottom_listdetail').each((_, card) => {
+    const href = $(card).find('a[href*="/location/"]').first().attr('href');
+    const text = $(card).find('.program_bot_available').text().trim();
+    if (!href || !text) return;
+    const match = text.match(/^(\d+)\s*(\+)?$/);
+    const full = /^(full|sold\s*out|เต็ม)$/i.test(text);
+    const slots = full ? 0 : match ? Number(match[1]) : null;
+    const slotType: SlotSemanticType = slots === 0 ? 'FULL' : match?.[2] ? 'AT_LEAST' : match ? 'EXACT' : 'UNKNOWN';
+    const status: JobStatus = slots === 0 ? 'FULL' : slots != null ? slots < 3 ? 'LIMITED' : 'OPEN' : 'UNKNOWN';
+    result.set(absolute(ACADEX_LIST_URL, href).replace(/\/$/, '') + '/', { slots, slotType, status, text });
+  });
+  return result;
+}
+
+export function parseAcadexPositions(html: string): string[] {
+  const $ = cheerio.load(html);
+  const section = $('.subtitle').filter((_, e) => $(e).text().trim() === 'Position').first().parent();
+  return [...new Set(section.find('.subtitlelist').map((_, e) => $(e).text().replace(/^\s*-\s*/, '').replace(/\s+/g, ' ').trim()).get().filter(s => s && !/[\u0E00-\u0E7F]/.test(s) && !/^\*+$/.test(s)))];
+}
 
 async function fetchHtml(url: string, retries = 2): Promise<string> {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -98,6 +122,7 @@ export async function scrapeAcadex(limit = 400): Promise<{
   }
 
   const $ = cheerio.load(listHtml);
+  const indexAvailability = parseAcadexAvailability(listHtml);
   const rawUrls: string[] = [];
 
   $('a[href*="/location/"]').each((_, a) => {
@@ -160,9 +185,9 @@ export async function scrapeAcadex(limit = 400): Promise<{
           const endDateText = endMatch ? endMatch[1].trim() : undefined;
 
           // Housing
-          const housingMatch = body.match(/Housing Information\s*([^]{1,250}?)(?=Housing Deposit|Transportation to work|State)/i);
+          const housingMatch = body.match(/Housing Information\s*([^]{1,2500}?)(?=Housing Deposit|Transportation to work|State)/i);
           const housingText = housingMatch ? housingMatch[1].trim() : undefined;
-          const weeklyCost = parseWeeklyHousing(housingText);
+          const weeklyCost = /202[0-6]|not finali[sz]ed|TBA|TBD|To be announced/i.test(housingText || '') ? undefined : parseWeeklyCost(housingText);
           const depositMatch = body.match(/Housing Deposit Required\s*\$?(\d+)/i);
           const deposit = depositMatch ? Number(depositMatch[1]) : undefined;
 
@@ -183,13 +208,10 @@ export async function scrapeAcadex(limit = 400): Promise<{
           }
 
           // Positions
-          const posSection = (body.match(/Position\s*([^]{1,900}?)(?=Rate\s*\$|Rate\s|Hours\s)/i) || [])[1] || '';
-          const posParts = posSection
-            .split(/(?:^|\s)-+\s+/)
-            .map((s) => s.trim())
-            .filter((s) => s && !/[\u0E00-\u0E7F]/.test(s) && !/^\*+$/.test(s) && !/remark/i.test(s));
-
-          let positions = posParts.length > 0 ? posParts : ['General Staff'];
+          const sourcePositions = parseAcadexPositions(pageHtml);
+          const positions = sourcePositions.length ? sourcePositions : ['ตำแหน่งยังไม่ระบุ'];
+          const cardAvailability = indexAvailability.get(url);
+          if (cardAvailability) status = cardAvailability.status;
 
           // Image
           let imageUrl: string | undefined;
@@ -207,10 +229,12 @@ export async function scrapeAcadex(limit = 400): Promise<{
           for (const p of positions) {
             records.push({
               agency: 'ACADEX',
+              sourceId: url,
+              sourceNotes: `ค่าแรงเป็นช่วงของประกาศรวม ไม่ได้ยืนยันอัตรารายตำแหน่ง${cardAvailability ? ` · หน้ารวมงานระบุ Available ${cardAvailability.text} สำหรับประกาศรวม ไม่ใช่จำนวนแยกแต่ละตำแหน่ง` : ''}${/202[0-6]|not finali[sz]ed|TBA|TBD/i.test(housingText || '') ? ' · ข้อมูลที่พักอ้างอิงปีก่อนหรือรอยืนยัน ไม่ใช้เป็นราคาที่พักปี 2027' : ''}`,
               employer,
               city,
               state,
-              season: 'Summer 2027',
+              season: /2027/.test(url + titleRaw) ? 'Summer 2027' : 'Summer (ไม่ระบุปี)',
               startDateText,
               endDateText,
               locationRaw,
@@ -221,7 +245,7 @@ export async function scrapeAcadex(limit = 400): Promise<{
                 weeklyCost,
                 housingText,
                 deposit,
-                mealsIncluded: /meal|3 meals|อาหาร/i.test(housingText || body)
+                mealsIncluded: mealsFromEvidence(housingText)
               },
               position: {
                 name: p,
@@ -230,7 +254,10 @@ export async function scrapeAcadex(limit = 400): Promise<{
                 wageMax,
                 wageText,
                 hoursText,
-                availableSlots: slots,
+                availableSlots: cardAvailability ? cardAvailability.slots === 0 ? 0 : positions.length === 1 ? cardAvailability.slots : null : slots,
+                slotType: cardAvailability ? positions.length === 1 || cardAvailability.slots === 0 ? cardAvailability.slotType : 'UNKNOWN' : slots === 0 ? 'FULL' : slots != null ? 'EXACT' : 'UNKNOWN',
+                rawSlotText: cardAvailability?.text,
+                availabilityText: cardAvailability ? `Available ${cardAvailability.text} (รวมประกาศ)` : undefined,
                 status
               }
             });
@@ -264,7 +291,7 @@ export async function scrapeAcadex(limit = 400): Promise<{
     positionsSaved: records.length,
     failedPages: failedUrls.length,
     failedUrls,
-    discoveryCoveragePct: 100,
+    discoveryCoveragePct: uniq(rawUrls).length ? uniqueUrls.length / uniq(rawUrls).length * 100 : 0,
     parseCoveragePct: uniqueUrls.length > 0 ? ((uniqueUrls.length - failedUrls.length) / uniqueUrls.length) * 100 : 0,
     coveragePct: uniqueUrls.length > 0 ? ((uniqueUrls.length - failedUrls.length) / uniqueUrls.length) * 100 : 0,
     slotTypes,

@@ -15,6 +15,7 @@ import type {
 import { canonicalEmployer } from './normalize';
 import { slug } from './common';
 import { adminDb } from './db';
+import { canAgeMissingRecords, recordIdentity, positionIdentity, normalizeUSState } from './dataIntegrity';
 
 const LOCAL_STORE_PATH = path.join(process.cwd(), 'data', 'wat-radar-store.json');
 
@@ -65,13 +66,14 @@ export function saveLocalStore(data: RadarStoreData): void {
  */
 export async function ingestScrapedRecords(
   records: ScrapedJobRecord[],
-  report: CoverageReport
+  report: CoverageReport,
+  options: { store?: RadarStoreData; persist?: boolean; syncRemote?: boolean } = {}
 ): Promise<{
   savedPositions: number;
   newSnapshots: number;
   report: CoverageReport;
 }> {
-  const store = loadLocalStore();
+  const store = options.store || loadLocalStore();
   const now = new Date().toISOString();
   const agencyId = report.agency;
 
@@ -81,7 +83,10 @@ export async function ingestScrapedRecords(
   const currentSyncPositionIds = new Set<string>();
   const currentSyncAgencyEmployerIds = new Set<string>();
 
-  for (const item of records) {
+  for (const rawItem of records) {
+    const reversedLocation = normalizeUSState(rawItem.city) && !normalizeUSState(rawItem.state);
+    const item = { ...rawItem, city: reversedLocation ? rawItem.state : rawItem.city, state: normalizeUSState(reversedLocation ? rawItem.city : rawItem.state) };
+    const observedAt = item.scrapedAt && Number.isFinite(Date.parse(item.scrapedAt)) ? item.scrapedAt : now;
     // 1. Resolve canonical employer
     const canon = canonicalEmployer(item.employer, item.city, item.state);
 
@@ -106,10 +111,11 @@ export async function ingestScrapedRecords(
     }
 
     // 2. Resolve agency employer
-    const agencyEmployerId = slug(`${item.agency}-${item.sourceId || canon.id}`);
+    const agencyEmployerId = recordIdentity(item);
     currentSyncAgencyEmployerIds.add(agencyEmployerId);
 
     const prevAgencyEmp = store.agencyEmployers[agencyEmployerId];
+    const prevHousing = store.housing[`housing-${agencyEmployerId}`];
     store.agencyEmployers[agencyEmployerId] = {
       id: agencyEmployerId,
       employerId: canon.id,
@@ -120,11 +126,12 @@ export async function ingestScrapedRecords(
       sourceId: item.sourceId,
       season: item.season,
       programStatus: item.programStatus,
+      sourceNotes: [item.sourceNotes, rawItem.state && !item.state ? `ไม่ยืนยันรัฐเดียว: ${rawItem.state} (ดูข้อความที่ตั้งต้นทาง)` : undefined].filter(Boolean).join(' · ') || undefined,
       startDateText: item.startDateText,
       endDateText: item.endDateText,
       locationRaw: item.locationRaw,
-      firstSeenAt: prevAgencyEmp?.firstSeenAt || now,
-      lastSeenAt: now,
+      firstSeenAt: prevAgencyEmp?.firstSeenAt || observedAt,
+      lastSeenAt: observedAt,
       missingRuns: 0,
       syncStatus: 'ACTIVE'
     };
@@ -139,7 +146,7 @@ export async function ingestScrapedRecords(
         housingText: item.housing.housingText,
         deposit: item.housing.deposit,
         depositText: item.housing.depositText,
-        mealsIncluded: item.housing.mealsIncluded || false,
+        mealsIncluded: item.housing.mealsIncluded,
         mealsPerDay: item.housing.mealsPerDay,
         mealsText: item.housing.mealsText,
         transportationText: item.housing.transportationText,
@@ -149,7 +156,7 @@ export async function ingestScrapedRecords(
     }
 
     // 4. Granular Position
-    const positionSlug = slug(item.position.name);
+    const positionSlug = positionIdentity(item.position);
     const positionId = `${agencyEmployerId}-${positionSlug}`;
     currentSyncPositionIds.add(positionId);
 
@@ -175,8 +182,8 @@ export async function ingestScrapedRecords(
       availabilityText: item.position.availabilityText,
       status: item.position.status,
       englishLevel: item.position.englishLevel,
-      firstSeenAt: prevPos?.firstSeenAt || now,
-      lastSeenAt: now,
+      firstSeenAt: prevPos?.firstSeenAt || observedAt,
+      lastSeenAt: observedAt,
       missingRuns: 0,
       isStale: false
     };
@@ -187,22 +194,30 @@ export async function ingestScrapedRecords(
       isNew ||
       prevPos.availableSlots !== item.position.availableSlots ||
       prevPos.wageHourly !== item.position.wageHourly ||
-      prevPos.status !== item.position.status;
+      prevPos.status !== item.position.status ||
+      prevHousing?.weeklyCost !== item.housing?.weeklyCost ||
+      prevHousing?.housingText !== item.housing?.housingText;
 
     if (shouldSnapshot) {
       store.snapshots.push({
         positionId,
         availableSlots: item.position.availableSlots,
         wageHourly: item.position.wageHourly,
+        housingWeekly: item.housing?.weeklyCost,
+        housingText: item.housing?.housingText,
         status: item.position.status,
-        capturedAt: now
+        capturedAt: observedAt
       });
       newSnapshots++;
+      if (!isNew && (prevHousing?.weeklyCost !== item.housing?.weeklyCost || prevHousing?.housingText !== item.housing?.housingText)) {
+        store.snapshots.push({ positionId, status: item.position.status, availableSlots: item.position.availableSlots, wageHourly: item.position.wageHourly, capturedAt: now, eventType: 'HOUSING_CHANGE', beforeValue: prevHousing?.housingText ?? String(prevHousing?.weeklyCost ?? 'ไม่ระบุ'), afterValue: item.housing?.housingText ?? String(item.housing?.weeklyCost ?? 'ไม่ระบุ') });
+        newSnapshots++;
+      }
     }
   }
 
   // 6. Handle staleness for missing items of this agency
-  for (const [posId, pos] of Object.entries(store.positions)) {
+  if (canAgeMissingRecords(report)) for (const [posId, pos] of Object.entries(store.positions)) {
     const parentAgencyEmp = store.agencyEmployers[pos.agencyEmployerId];
     if (parentAgencyEmp && parentAgencyEmp.agencyId === agencyId) {
       if (!currentSyncPositionIds.has(posId)) {
@@ -212,7 +227,7 @@ export async function ingestScrapedRecords(
     }
   }
 
-  for (const [aeId, ae] of Object.entries(store.agencyEmployers)) {
+  if (canAgeMissingRecords(report)) for (const [aeId, ae] of Object.entries(store.agencyEmployers)) {
     if (ae.agencyId === agencyId) {
       if (!currentSyncAgencyEmployerIds.has(aeId)) {
         ae.missingRuns = (ae.missingRuns || 0) + 1;
@@ -225,7 +240,8 @@ export async function ingestScrapedRecords(
 
   // 7. Calculate source health
   let lastStatus: HealthStatus = 'Healthy';
-  if (report.coveragePct === 0) lastStatus = 'Error';
+  if (report.connectorType === 'TBD') lastStatus = 'Connector Needed';
+  else if (!Number.isFinite(report.coveragePct) || report.coveragePct === 0 || report.status === 'ERROR') lastStatus = 'Error';
   else if (report.failedPages > 0 && report.coveragePct < 95) lastStatus = 'Partial';
   else if (report.failedPages > 0) lastStatus = 'Warning';
 
@@ -234,12 +250,12 @@ export async function ingestScrapedRecords(
     return ae && ae.agencyId === agencyId && !p.isStale;
   });
 
-  const activeSlotsCount = agencyPositions.filter(p => (p.availableSlots ?? 1) > 0 && p.status !== 'FULL' && p.status !== 'CLOSED').length;
+  const activeSlotsCount = agencyPositions.filter(p => ['OPEN', 'LOW_SLOTS', 'LIMITED'].includes(p.status)).length;
 
   store.sourceHealth[agencyId] = {
     agencyId,
     connectorType: report.connectorType,
-    lastSyncAt: now,
+    lastSyncAt: records.length ? records.map(r => r.scrapedAt).filter(t => Number.isFinite(Date.parse(t))).sort().at(-1) || now : now,
     lastStatus,
     lastCoveragePct: report.coveragePct,
     employersCount: report.employersFound,
@@ -273,11 +289,11 @@ export async function ingestScrapedRecords(
   store.discoveredUrls[agencyId] = [...new Set(records.map(r => r.sourceUrl))];
 
   store.lastUpdated = now;
-  saveLocalStore(store);
+  if (options.persist !== false) saveLocalStore(store);
 
   // 9. Sync to Supabase if configured
   try {
-    const db = adminDb();
+    const db = options.syncRemote === false ? null : adminDb();
     if (db) {
       // Upsert employers
       const empRows = Object.values(store.employers).map(e => ({
