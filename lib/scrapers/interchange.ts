@@ -171,7 +171,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://maininterchange.com/product/alabama',
+    sourceUrl: 'https://maininterchange.com/review/oporr-wasinee-mcdonalds-new-hampshire',
     imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -217,7 +217,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '15 พ.ค. - 01 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/job/',
+    sourceUrl: 'https://www.interchangethailand.com/jobs/st-joe-club-and-resort/',
     imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -240,7 +240,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 15 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=wisconsin#wilderness-resort',
     imageUrl: 'https://images.unsplash.com/photo-1582650625119-3a31f841807d?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -263,7 +263,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 07 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=wisconsin#kalahari-resort',
     imageUrl: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -286,7 +286,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=ohio#kalahari-sandusky',
     imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -309,7 +309,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '18 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=illinois#six-flags-great-america',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -332,7 +332,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 12 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=new-jersey#moreys-piers',
     imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -355,7 +355,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '15 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 08 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=ohio#cedar-point',
     imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -378,7 +378,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '25 พ.ค. - 15 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 15 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=wyoming#grand-teton',
     imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -401,7 +401,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '05 ก.ย. - 15 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=wyoming#xanterra-yellowstone',
     imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -424,7 +424,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=texas#bubba-gump-galveston',
     imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -447,7 +447,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=south-carolina#landrys-seafood',
     imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -470,7 +470,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=tennessee#rainforest-cafe',
     imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -493,7 +493,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 05 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Advanced',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=colorado#holiday-inn-express',
     imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -516,7 +516,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=south-dakota#best-western-rapid-city',
     imageUrl: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -539,7 +539,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '18 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 08 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=wisconsin#mt-olympus',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -562,7 +562,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 05 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 07 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=massachusetts#dunkin-donuts-cape-cod',
     imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -585,7 +585,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=florida#wendys-panama-city-beach',
     imageUrl: 'https://images.unsplash.com/photo-1552895638-f7fe08d20265?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -608,7 +608,7 @@ const INTERCHANGE_CATALOG: RawInterchangeJob[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://www.interchangethailand.com/work-travel/',
+    sourceUrl: 'https://maininterchange.com/work_and_travel_summer?yith_wcan=1&query_type_state=and&filter_state=missouri#dairy-queen-branson',
     imageUrl: 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=800&q=80'
   }
 ];
@@ -664,7 +664,7 @@ export async function scrapeInterchange(): Promise<{
       season: raw.season || 'Summer 2027',
       startDateText: raw.startDateText,
       endDateText: raw.endDateText,
-      sourceUrl: raw.sourceUrl || 'https://www.interchangethailand.com/work-travel/',
+      sourceUrl: raw.sourceUrl || 'https://maininterchange.com/work_and_travel_summer',
       imageUrl: raw.imageUrl,
       scrapedAt: nowIso,
       position: {

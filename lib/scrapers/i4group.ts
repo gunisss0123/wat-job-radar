@@ -56,7 +56,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '15 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Dollywood%20Parks%20%26%20Resorts&position=Ride%20Operator%20%26%20Attractions',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -79,7 +79,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 12 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Busch%20Gardens%20Williamsburg&position=Park%20Operations%20%26%20Guest%20Relations',
     imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -102,7 +102,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 07 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Water%20Country%20USA&position=Certified%20Lifeguard%20%2F%20Water%20Safety',
     imageUrl: 'https://images.unsplash.com/photo-1582650625119-3a31f841807d?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -125,7 +125,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=SeaWorld%20San%20Antonio&position=Attractions%20%26%20Food%20Operations',
     imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -148,7 +148,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Aquatica%20Waterpark%20Texas&position=Shallow%20Water%20Lifeguard',
     imageUrl: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -171,7 +171,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '01 มิ.ย. - 15 มิ.ย. 2027',
     endDateText: '05 ก.ย. - 20 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Glacier%20National%20Park%20Lodges&position=Kitchen%20Crew%20%26%20Housekeeping',
     imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -194,7 +194,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Mount%20Rushmore%20National%20Memorial%20Society&position=Retail%20Associate%20%26%20Food%20Service',
     imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -217,7 +217,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '18 พ.ค. - 05 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Great%20Wolf%20Lodge%20Gurnee&position=Indoor%20Lifeguard%20%26%20Hospitality',
     imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -240,7 +240,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 07 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Dorney%20Park%20%26%20Wildwater%20Kingdom&position=Ride%20Operations%20%26%20Food%20Service',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -263,7 +263,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '18 พ.ค. - 08 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 08 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Kings%20Dominion&position=Ride%20Operator%20%26%20Games%20Team',
     imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -286,7 +286,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Carowinds%20Amusement%20Park&position=Attractions%20Host%20%26%20Cashier',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -309,7 +309,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '15 พ.ค. - 05 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Hard%20Rock%20Hotel%20%26%20Casino%20Atlantic%20City&position=Busser%20%2F%20Steward%20%2F%20Retail%20Associate',
     imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -332,7 +332,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '05 ก.ย. - 15 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Thrasher%27s%20French%20Fries&position=Cashier%20%26%20Fry%20Cook',
     imageUrl: 'https://images.unsplash.com/photo-1552895638-f7fe08d20265?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -355,7 +355,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Fisher%27s%20Popcorn&position=Retail%20Sales%20%26%20Popcorn%20Maker',
     imageUrl: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -378,7 +378,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '18 พ.ค. - 05 มิ.ย. 2027',
     endDateText: '05 ก.ย. - 15 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=The%20Dough%20Roller&position=Pizza%20Cook%20%26%20Busser',
     imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -401,7 +401,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Grand%20Hotel%20Mackinac%20Island&position=Housekeeping%20%26%20Dining%20Room%20Assistant',
     imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -424,7 +424,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Hersheypark&position=Ride%20Attendant%20%26%20Food%20Services',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -447,7 +447,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '18 พ.ค. - 05 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Upper-Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Holiday%20Inn%20Resort%20Panama%20City%20Beach&position=Front%20Desk%20%26%20Guest%20Services',
     imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -470,7 +470,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Marriott%20OceanWatch%20at%20Grande%20Dunes&position=Housekeeping%20%26%20Pool%20Attendant',
     imageUrl: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -493,7 +493,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Silver%20Dollar%20City&position=Ride%20Operations%20%26%20Craft%20Retail',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -516,7 +516,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '18 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 10 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Knott%27s%20Berry%20Farm&position=Ride%20Operator%20%26%20Food%20Team%20Member',
     imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -539,7 +539,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '25 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Valleyfair%20Amusement%20Park&position=Park%20Services%20%26%20Ride%20Attendant',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -562,7 +562,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '28 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Worlds%20of%20Fun%20%26%20Oceans%20of%20Fun&position=Ride%20Operations%20%26%20Food%20Service',
     imageUrl: 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -585,7 +585,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '25 ส.ค. - 05 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Kentucky%20Kingdom%20%26%20Hurricane%20Bay&position=Ride%20Operator%20%26%20Lifeguard',
     imageUrl: 'https://images.unsplash.com/photo-1582650625119-3a31f841807d?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -608,7 +608,7 @@ const I4GROUP_CATALOG: RawI4Job[] = [
     startDateText: '20 พ.ค. - 10 มิ.ย. 2027',
     endDateText: '01 ก.ย. - 08 ก.ย. 2027',
     englishLevel: 'Intermediate',
-    sourceUrl: 'https://i4gs.com/work-and-travel-in-usa-program/',
+    sourceUrl: 'https://i4gs.com/apply-online/?employer=Splish%20Splash%20Waterpark&position=Waterpark%20Attendant%20%26%20Food%20Service',
     imageUrl: 'https://images.unsplash.com/photo-1582650625119-3a31f841807d?auto=format&fit=crop&w=800&q=80'
   }
 ];
@@ -664,7 +664,7 @@ export async function scrapeI4Group(): Promise<{
       season: raw.season || 'Summer 2027',
       startDateText: raw.startDateText,
       endDateText: raw.endDateText,
-      sourceUrl: raw.sourceUrl || 'https://i4gs.com/work-and-travel-in-usa-program/',
+      sourceUrl: raw.sourceUrl || `https://i4gs.com/apply-online/?employer=${encodeURIComponent(raw.employer)}&position=${encodeURIComponent(raw.position)}`,
       imageUrl: raw.imageUrl,
       scrapedAt: nowIso,
       position: {

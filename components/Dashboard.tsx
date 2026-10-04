@@ -747,8 +747,32 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
               className="modal-btn-cta"
               style={{ flex: 1, minWidth: 200, textAlign: 'center' }}
             >
-              เปิดดูหน้าประกาศต้นทางที่ {job.agency} ↗
+              {job.agency === 'I4 Group'
+                ? `เปิดดูใบสมัคร & ประกาศตำแหน่งนี้ที่ I4 Group ↗`
+                : `เปิดดูหน้าประกาศต้นทางที่ ${job.agency} ↗`}
             </a>
+            {job.agency === 'I4 Group' && (
+              <a
+                href="https://line.me/R/ti/p/@ifourgroup"
+                target="_blank"
+                rel="noreferrer"
+                className="modal-btn-cta"
+                style={{ background: '#06C755', color: '#fff', border: 'none', flex: '0 0 auto', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+              >
+                💬 สอบถามทาง LINE @ifourgroup ↗
+              </a>
+            )}
+            {job.agency === 'Interchange' && (
+              <a
+                href="https://line.me/R/ti/p/@itc_wat"
+                target="_blank"
+                rel="noreferrer"
+                className="modal-btn-cta"
+                style={{ background: '#06C755', color: '#fff', border: 'none', flex: '0 0 auto', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+              >
+                💬 สอบถามทาง LINE @itc_wat ↗
+              </a>
+            )}
             <a
               href="/fees"
               className="modal-btn-cta"
