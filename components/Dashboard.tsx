@@ -80,6 +80,24 @@ function isRecentJob(isoString?: string, maxAgeHours = 48): boolean {
   }
 }
 
+function formatTimeAgo(isoString?: string): string {
+  if (!isoString) return '';
+  try {
+    const d = new Date(isoString);
+    const now = Date.now();
+    const diffMs = now - d.getTime();
+    if (diffMs < 0) return 'เมื่อสักครู่';
+    const diffMins = Math.floor(diffMs / (60 * 1000));
+    if (diffMins < 60) return diffMins <= 1 ? 'เมื่อสักครู่' : `${diffMins} นาทีที่แล้ว`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} ชั่วโมงที่แล้ว`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} วันที่แล้ว`;
+  } catch {
+    return '';
+  }
+}
+
 const PAGE_CHUNK = 48;
 
 export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
@@ -223,7 +241,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
         {latestArrivalIso && (
           <div className="sync-status-item">
             <span>🕒</span>
-            <span>ตรวจพบงานใหม่ล่าสุดเมื่อ: <b style={{ color: 'var(--orange)' }}>{formatArrivalDateTime(latestArrivalIso)}</b></span>
+            <span>ตรวจพบงานใหม่ล่าสุดเมื่อ: <b style={{ color: 'var(--orange)' }}>{formatArrivalDateTime(latestArrivalIso)}</b> {formatTimeAgo(latestArrivalIso) && <small style={{ color: 'var(--text-muted)' }}>({formatTimeAgo(latestArrivalIso)})</small>}</span>
           </div>
         )}
         <div className="sync-status-item">
@@ -462,6 +480,7 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
   const isGroup3 = job.availableSlots == null || job.availableSlots >= 3;
   const isRecent = isRecentJob(job.firstSeenAt || job.lastSeenAt, 48);
   const arrivalTime = formatArrivalDateTime(job.firstSeenAt || job.lastSeenAt);
+  const timeAgo = formatTimeAgo(job.firstSeenAt || job.lastSeenAt);
   const locationDisplay = [job.city, job.state].filter(Boolean).join(', ') || 'USA';
 
   return (
@@ -481,7 +500,7 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
           <span className={`agency-badge ${agencyClass}`}>{job.agency}</span>
           {isRecent && (
             <span className="new-arrival-pill">
-              🆕 งานเข้าใหม่
+              🆕 งานเข้าใหม่ {timeAgo ? `(${timeAgo})` : ''}
             </span>
           )}
           <span className={`status-pill ${statusInfo.class}`}>
@@ -500,8 +519,9 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
       <div className="card-content">
         {/* Exact Arrival Timestamp Tag */}
         <div className={`card-arrival-badge ${isRecent ? 'highlight-new' : ''}`}>
-          <span>🕒</span>
-          <span>เข้าสู่ระบบ: <b>{arrivalTime}</b></span>
+          <span>🌐</span>
+          <span>ดึงจากเว็บ <b>{job.agency}</b>: <b>{arrivalTime}</b></span>
+          {timeAgo && <span style={{ opacity: 0.8, fontSize: 10.5 }}>({timeAgo})</span>}
         </div>
 
         <h2 className="card-employer-title" title={job.employer}>
@@ -681,24 +701,30 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           </div>
 
-          <div className="modal-section-title">🕒 ไทม์ไลน์การตรวจพบงาน (Auto-Sync Radar)</div>
+          <div className="modal-section-title">🕒 ประวัติเวลาที่ดึงงานจากเว็บ {job.agency} (Agency Website Crawl)</div>
           <div className="modal-details-grid">
             <div className="metric-cell">
-              <span className="metric-cell-label">🆕 ตรวจพบงานใหม่ครั้งแรก</span>
-              <span className="metric-cell-val val-green">
+              <span className="metric-cell-label">🌐 ตรวจพบในเว็บ {job.agency} ครั้งแรกเมื่อ</span>
+              <span className="metric-cell-val val-green" style={{ fontSize: 15 }}>
                 {formatArrivalDateTime(job.firstSeenAt || job.lastSeenAt)}
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+                {formatTimeAgo(job.firstSeenAt || job.lastSeenAt) ? `(${formatTimeAgo(job.firstSeenAt || job.lastSeenAt)})` : ''}
               </span>
             </div>
             <div className="metric-cell">
-              <span className="metric-cell-label">🔄 ซิงก์ข้อมูลสถานะล่าสุด</span>
-              <span className="metric-cell-val">
+              <span className="metric-cell-label">🔄 รอบดึงข้อมูลสดเพื่อยืนยันสถานะล่าสุด</span>
+              <span className="metric-cell-val" style={{ fontSize: 15 }}>
                 {formatArrivalDateTime(job.lastSeenAt)}
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+                {formatTimeAgo(job.lastSeenAt) ? `(${formatTimeAgo(job.lastSeenAt)})` : ''}
               </span>
             </div>
             <div className="metric-cell" style={{ gridColumn: 'span 2' }}>
-              <span className="metric-cell-label">⏱️ รอบการดึงงานใหม่อัตโนมัติ</span>
-              <span className="metric-cell-val" style={{ color: 'var(--sky-blue)' }}>
-                ดึงข้อมูลสดอัตโนมัติทุก 1 ชั่วโมง (Hourly Auto-Sync)
+              <span className="metric-cell-label">⏱️ รอบความถี่ในการดึงงานจากเว็บ {job.agency}</span>
+              <span className="metric-cell-val" style={{ color: 'var(--sky-blue)', fontSize: 13, lineHeight: 1.5 }}>
+                ระบบจะเข้าไปสแกนหน้าเว็บ <b>{job.agency}</b> อัตโนมัติทุกๆ 1 ชั่วโมง เพื่อดึงงานที่เอเจนซี่เพิ่งปล่อยใหม่ออกมาแสดงทันที
               </span>
             </div>
           </div>
