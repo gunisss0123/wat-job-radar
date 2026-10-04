@@ -10,6 +10,8 @@ test('ACADEX reads index-card availability, including lower bounds and full', ()
   assert.equal(cards.get('https://www.acadexthailand.com/location/one/')?.slotType, 'AT_LEAST');
   assert.equal(cards.get('https://www.acadexthailand.com/location/one/')?.slots, 9);
   assert.equal(cards.get('https://www.acadexthailand.com/location/two/')?.status, 'FULL');
+  const soon = parseAcadexAvailability('<div class="bottom_listdetail"><a href="/location/soon/"></a><div class="bottom_listdetail_bo2">เร็วๆ นี้</div></div>');
+  assert.equal(soon.get('https://www.acadexthailand.com/location/soon/')?.status, 'COMING_SOON');
 });
 
 test('Interchange parses real feature table without treating overtime as job status or inventing year', () => {
