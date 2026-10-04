@@ -21,13 +21,13 @@ export function parseAcadexAvailability(html: string) {
   const result = new Map<string, { slots: number | null; slotType: SlotSemanticType; status: JobStatus; text: string }>();
   $('.bottom_listdetail').each((_, card) => {
     const href = $(card).find('a[href*="/location/"]').first().attr('href');
-    const text = $(card).find('.program_bot_available').text().trim();
+    const text = $(card).find('.program_bot_available').text().trim() || (/เร็ว\s*ๆ\s*นี้|coming soon/i.test($(card).find('.bottom_listdetail_bo2').text()) ? 'เร็ว ๆ นี้' : '');
     if (!href || !text) return;
     const match = text.match(/^(\d+)\s*(\+)?$/);
     const full = /^(full|sold\s*out|เต็ม)$/i.test(text);
     const slots = full ? 0 : match ? Number(match[1]) : null;
     const slotType: SlotSemanticType = slots === 0 ? 'FULL' : match?.[2] ? 'AT_LEAST' : match ? 'EXACT' : 'UNKNOWN';
-    const status: JobStatus = slots === 0 ? 'FULL' : slots != null ? slots < 3 ? 'LIMITED' : 'OPEN' : 'UNKNOWN';
+    const status: JobStatus = slots === 0 ? 'FULL' : slots != null ? slots < 3 ? 'LIMITED' : 'OPEN' : /เร็ว\s*ๆ\s*นี้/.test(text) ? 'COMING_SOON' : 'UNKNOWN';
     result.set(absolute(ACADEX_LIST_URL, href).replace(/\/$/, '') + '/', { slots, slotType, status, text });
   });
   return result;

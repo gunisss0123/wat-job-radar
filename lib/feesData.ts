@@ -116,7 +116,7 @@ export const AGENCY_FEES_DATA: AgencyFeeDetail[] = [
     flightPolicy: fact('จองเองได้หลังวีซ่าผ่าน; หน้าโครงการประมาณ 35,000 บาท', acadexInfo, 'ประมาณการทั่วไป ไม่รับประกันราคาปี 2027'),
     refundJobFail: fact('Yellowstone Summer 2027: ไม่ผ่านพิจารณา/สัมภาษณ์ สามารถเลือกงานในองค์กรแลกเปลี่ยนเดิมโดยไม่เสียค่าใช้จ่าย', source('https://www.acadexthailand.com/location/xanterra-yellowstone-national-park-wyoming-summer-2027-group-x/', 'ACADEX: Yellowstone Summer 2027', 'เฉพาะ Yellowstone Summer 2027 Group X'), 'เป็นสิทธิ์เปลี่ยนงาน ไม่ใช่หลักฐานคืนเงิน'),
   },
-  agency('interchange', 'Interchange', 'https://maininterchange.com/'),
+  agency('interchange', 'Interchange', 'https://www.interchangethailand.com/'),
   {
     ...agency('i4group', 'I4 Group', 'https://i4gs.com/work-and-travel-in-usa-program/'),
     installments: fact('ชำระส่วนแรกก่อนส่งใบสมัครให้องค์กร และส่วนที่เหลือเมื่อได้รับ Job Offer; ไม่ระบุยอด', source('https://i4gs.com/work-and-travel-in-usa-program/', 'I4 Group: ขั้นตอนเข้าร่วมโครงการ', 'ข้อมูลทั่วไป ไม่ระบุปีโครงการ')),

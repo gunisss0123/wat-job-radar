@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { scrapeAcadex } from '../lib/scrapers/acadex';
+import { scrapeAcadex, parseAcadexAvailability } from '../lib/scrapers/acadex';
 import { scrapeInterchange } from '../lib/scrapers/interchange';
 import { scrapeI4Group } from '../lib/scrapers/i4group';
 import { ingestScrapedRecords, loadLocalStore, saveLocalStore } from '../lib/engine';
@@ -7,7 +7,20 @@ import { recordIdentity, positionIdentity } from '../lib/dataIntegrity';
 
 async function main() {
   const store = loadLocalStore();
-  const results = await Promise.all([scrapeAcadex(), scrapeInterchange(), scrapeI4Group()]);
+  const results = process.argv.includes('--cached')
+    ? JSON.parse(fs.readFileSync('data/connector-evidence/refresh.json', 'utf8')) as Awaited<ReturnType<typeof scrapeAcadex>>[]
+    : await Promise.all([scrapeAcadex(), scrapeInterchange(), scrapeI4Group()]);
+  if (process.argv.includes('--cached')) {
+    const cards = parseAcadexAvailability(fs.readFileSync('data/connector-evidence/acadex.html', 'utf8'));
+    for (const result of results) for (const record of result.records) {
+      if (record.agency === 'ACADEX' && cards.get(record.sourceUrl)?.status === 'COMING_SOON') {
+        record.position.status = 'COMING_SOON';
+        record.position.availableSlots = null;
+        record.position.slotType = 'UNKNOWN';
+        record.position.availabilityText = 'เร็ว ๆ นี้ (หน้ารวมงาน)';
+      }
+    }
+  }
   const audit: unknown[] = [];
   for (const { records, report } of results) {
     const ids = records.map(r => recordIdentity(r) + '|' + positionIdentity(r.position));

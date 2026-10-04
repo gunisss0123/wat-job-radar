@@ -7464,7 +7464,8 @@
           "hoursText": "Average 32-40 hours per week",
           "availableSlots": null,
           "slotType": "UNKNOWN",
-          "status": "UNKNOWN"
+          "status": "COMING_SOON",
+          "availabilityText": "เร็ว ๆ นี้ (หน้ารวมงาน)"
         }
       },
       {
@@ -7493,7 +7494,8 @@
           "hoursText": "Average 32-40 hours per week",
           "availableSlots": null,
           "slotType": "UNKNOWN",
-          "status": "UNKNOWN"
+          "status": "COMING_SOON",
+          "availabilityText": "เร็ว ๆ นี้ (หน้ารวมงาน)"
         }
       },
       {
@@ -7707,7 +7709,8 @@
           "hoursText": "Average 32-40 hours per week",
           "availableSlots": null,
           "slotType": "UNKNOWN",
-          "status": "UNKNOWN"
+          "status": "COMING_SOON",
+          "availabilityText": "เร็ว ๆ นี้ (หน้ารวมงาน)"
         }
       },
       {
@@ -7736,7 +7739,8 @@
           "hoursText": "Average 32-40 hours per week",
           "availableSlots": null,
           "slotType": "UNKNOWN",
-          "status": "UNKNOWN"
+          "status": "COMING_SOON",
+          "availabilityText": "เร็ว ๆ นี้ (หน้ารวมงาน)"
         }
       },
       {
