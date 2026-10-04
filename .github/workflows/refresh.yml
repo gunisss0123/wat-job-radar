@@ -26,7 +26,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Sync all 5 Agencies (OEG, New Step, ALC, IEE, iHappy)
+      - name: Sync all 6 Agencies (OEG, New Step, ALC, IEE, iHappy, ACADEX)
         run: npm run sync:all
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

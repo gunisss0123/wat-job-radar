@@ -128,15 +128,29 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
       };
     }
 
-    let rawJobs: Job[] = [];
-    if (name === 'ACADEX') rawJobs = await scrapeAcadex();
-    const jobs = rawJobs.map(enrichForProfile);
+    if (name === 'ACADEX') {
+      const { records, report } = await scrapeAcadex();
+      await ingestScrapedRecords(records, report);
+      const jobs = records.map(scrapedRecordToLegacyJob).map(enrichForProfile);
+      return {
+        jobs,
+        run: {
+          source: name,
+          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          jobCount: records.length,
+          durationMs: Date.now() - started,
+          ranAt: new Date().toISOString()
+        },
+        report
+      };
+    }
+
     return {
-      jobs,
+      jobs: [],
       run: {
         source: name,
         health: 'OK',
-        jobCount: jobs.length,
+        jobCount: 0,
         durationMs: Date.now() - started,
         ranAt: new Date().toISOString()
       }

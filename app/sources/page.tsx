@@ -13,6 +13,7 @@ export default async function Page() {
     ALC: 'alc',
     IEE: 'iee',
     iHappy: 'ihappy',
+    ACADEX: 'acadex',
   };
 
   return (
@@ -22,7 +23,7 @@ export default async function Page() {
           <span className="eyebrow-chip">🛡️ AUDIT & HEALTH STATUS</span>
           <h1>สถานะแหล่งข้อมูลและการเชื่อมต่อ (Source Health)</h1>
           <p>
-            ตรวจสอบความสมบูรณ์ในการดึงข้อมูล (Coverage) และสถานะการเข้าถึงหน้าเว็บของทั้ง 5 Agency
+            ตรวจสอบความสมบูรณ์ในการดึงข้อมูล (Coverage) และสถานะการเข้าถึงหน้าเว็บของทั้ง 6 Agency
             ถ้า Agency ใดเปลี่ยนโครงสร้างหน้าเว็บ ระบบจะขึ้นเตือนทันที
           </p>
         </div>

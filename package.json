@@ -13,6 +13,7 @@
     "scrape:newstep": "tsx scripts/scrape.ts NewStep",
     "sync:oeg": "tsx scripts/sync-oeg.ts",
     "sync:newstep": "tsx scripts/sync-newstep.ts",
+    "sync:acadex": "tsx scripts/sync-acadex.ts",
     "sync:all": "tsx scripts/sync-all-agencies.ts",
     "coverage": "tsx scripts/coverage.ts",
     "typecheck": "tsc --noEmit",

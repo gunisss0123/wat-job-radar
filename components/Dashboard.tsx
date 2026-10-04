@@ -95,7 +95,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
     return counts;
   }, [initialJobs]);
 
-  const agencies = useMemo(() => ['ALL', 'OEG', 'New Step', 'ALC', 'IEE', 'iHappy'], []);
+  const agencies = useMemo(() => ['ALL', 'OEG', 'New Step', 'ALC', 'IEE', 'iHappy', 'ACADEX'], []);
   const states = useMemo(
     () => ['ALL', ...Array.from(new Set(initialJobs.map((j) => j.state).filter(Boolean) as string[])).sort()],
     [initialJobs]
