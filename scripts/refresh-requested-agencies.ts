@@ -13,11 +13,12 @@ async function main() {
   if (process.argv.includes('--cached')) {
     const cards = parseAcadexAvailability(fs.readFileSync('data/connector-evidence/acadex.html', 'utf8'));
     for (const result of results) for (const record of result.records) {
-      if (record.agency === 'ACADEX' && cards.get(record.sourceUrl)?.status === 'COMING_SOON') {
-        record.position.status = 'COMING_SOON';
-        record.position.availableSlots = null;
-        record.position.slotType = 'UNKNOWN';
-        record.position.availabilityText = 'เร็ว ๆ นี้ (หน้ารวมงาน)';
+      const card = record.agency === 'ACADEX' ? cards.get(record.sourceUrl) : undefined;
+      if (card && ['COMING_SOON', 'FULL'].includes(card.status)) {
+        record.position.status = card.status;
+        record.position.availableSlots = card.status === 'FULL' ? 0 : null;
+        record.position.slotType = card.status === 'FULL' ? 'FULL' : 'UNKNOWN';
+        record.position.availabilityText = card.text + ' (หน้ารวมงาน)';
       }
     }
   }

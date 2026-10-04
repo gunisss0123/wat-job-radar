@@ -21,7 +21,8 @@ export function parseAcadexAvailability(html: string) {
   const result = new Map<string, { slots: number | null; slotType: SlotSemanticType; status: JobStatus; text: string }>();
   $('.bottom_listdetail').each((_, card) => {
     const href = $(card).find('a[href*="/location/"]').first().attr('href');
-    const text = $(card).find('.program_bot_available').text().trim() || (/เร็ว\s*ๆ\s*นี้|coming soon/i.test($(card).find('.bottom_listdetail_bo2').text()) ? 'เร็ว ๆ นี้' : '');
+    const buttonText = $(card).find('.bottom_listdetail_bo2').text();
+    const text = $(card).find('.program_bot_available').text().trim() || (/เต็ม|sold\s*out/i.test(buttonText) ? 'เต็ม' : /เร็ว\s*ๆ\s*นี้|coming soon/i.test(buttonText) ? 'เร็ว ๆ นี้' : '');
     if (!href || !text) return;
     const match = text.match(/^(\d+)\s*(\+)?$/);
     const full = /^(full|sold\s*out|เต็ม)$/i.test(text);
@@ -275,6 +276,10 @@ export async function scrapeAcadex(limit = 400): Promise<{
   }
 
   const employersFound = new Set(records.map((r) => r.employer)).size;
+  slotTypes.exactNumeric = records.filter(r => r.position.slotType === 'EXACT').length;
+  slotTypes.moreThanX = records.filter(r => r.position.slotType === 'AT_LEAST').length;
+  slotTypes.full = records.filter(r => r.position.status === 'FULL').length;
+  slotTypes.unknown = records.filter(r => r.position.slotType === 'UNKNOWN').length;
 
   const report: CoverageReport = {
     agency: 'ACADEX',

@@ -12,6 +12,8 @@ test('ACADEX reads index-card availability, including lower bounds and full', ()
   assert.equal(cards.get('https://www.acadexthailand.com/location/two/')?.status, 'FULL');
   const soon = parseAcadexAvailability('<div class="bottom_listdetail"><a href="/location/soon/"></a><div class="bottom_listdetail_bo2">เร็วๆ นี้</div></div>');
   assert.equal(soon.get('https://www.acadexthailand.com/location/soon/')?.status, 'COMING_SOON');
+  const fullButton = parseAcadexAvailability('<div class="bottom_listdetail"><a href="/location/closed/"></a><div class="bottom_listdetail_bo2">Compare เต็ม</div></div>');
+  assert.equal(fullButton.get('https://www.acadexthailand.com/location/closed/')?.status, 'FULL');
 });
 
 test('Interchange parses real feature table without treating overtime as job status or inventing year', () => {

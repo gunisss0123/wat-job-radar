@@ -200,7 +200,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
   const displayedJobs = useMemo(() => filteredJobs.slice(0, displayLimit), [filteredJobs, displayLimit]);
 
   // Statistics
-  const openCount = useMemo(() => initialJobs.filter((j) => j.status === 'OPEN' || j.status === 'LOW_SLOTS').length, [initialJobs]);
+  const openCount = useMemo(() => initialJobs.filter((j) => ['OPEN', 'LOW_SLOTS', 'LIMITED'].includes(j.status)).length, [initialJobs]);
   const group3Count = useMemo(() => initialJobs.filter((j) => verifiedGroupCapacity(j) >= 3).length, [initialJobs]);
   const totalAgencies = useMemo(() => new Set(initialJobs.map((j) => j.agency)).size, [initialJobs]);
 
