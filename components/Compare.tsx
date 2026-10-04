@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useDeferredValue } from 'react';
 import type { Job } from '@/lib/types';
 
 function formatArrivalDateTime(isoString?: string): string {
@@ -38,6 +38,18 @@ function formatTimeAgo(isoString?: string): string {
   }
 }
 
+function isRecentJob(isoString?: string, withinHours: number = 48): boolean {
+  if (!isoString) return false;
+  try {
+    const d = new Date(isoString);
+    const diffHours = (Date.now() - d.getTime()) / (1000 * 60 * 60);
+    return diffHours >= 0 && diffHours <= withinHours;
+  } catch {
+    return false;
+  }
+}
+
+
 const defaultFallbacks = [
   'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80',
   'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
@@ -61,6 +73,7 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
   const [selectedCity, setSelectedCity] = useState<string>('ALL');
   const [selectedAgency, setSelectedAgency] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const deferredSearch = useDeferredValue(searchQuery);
 
   // 4 Compare Slots (IDs)
   const initialTop = useMemo(() => {
@@ -105,9 +118,9 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
       if (selectedState !== 'ALL' && j.state !== selectedState) return false;
       if (selectedCity !== 'ALL' && j.city !== selectedCity) return false;
       if (selectedAgency !== 'ALL' && j.agency !== selectedAgency) return false;
-      if (searchQuery) {
+      if (deferredSearch) {
         const hay = [j.employer, j.position, j.city, j.state, j.agency].join(' ').toLowerCase();
-        if (!hay.includes(searchQuery.toLowerCase())) return false;
+        if (!hay.includes(deferredSearch.toLowerCase())) return false;
       }
       return true;
     }).sort((a, b) => {
@@ -117,7 +130,7 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
       if (timeB !== timeA) return timeB - timeA;
       return (b.fitScore || 0) - (a.fitScore || 0);
     });
-  }, [jobs, selectedState, selectedCity, selectedAgency, searchQuery]);
+  }, [jobs, selectedState, selectedCity, selectedAgency, deferredSearch]);
 
   // Resolved Job objects for the 4 slots
   const selectedJobs = useMemo(() => {
@@ -308,9 +321,16 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
                     }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <span className={`agency-badge ${agencyClass}`} style={{ fontSize: 10, padding: '2px 6px' }}>
-                      {currentJob.agency}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <span className={`agency-badge ${agencyClass}`} style={{ fontSize: 10, padding: '2px 6px' }}>
+                        {currentJob.agency}
+                      </span>
+                      {isRecentJob(currentJob.firstSeenAt || currentJob.lastSeenAt, 48) && (
+                        <span className="new-arrival-pill" style={{ fontSize: 9.5, padding: '1px 6px' }}>
+                          🆕 ใหม่
+                        </span>
+                      )}
+                    </div>
                     <h4
                       style={{
                         margin: '4px 0 2px',
@@ -333,25 +353,6 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
                 <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
                   <span>📍 {[currentJob.city, currentJob.state].filter(Boolean).join(', ')}</span>
                   <span style={{ fontWeight: 700, color: 'var(--orange)' }}>{currentJob.wageText || '—'}</span>
-                </div>
-
-                {/* Arrival Timestamp from Agency Website */}
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: '#0369a1',
-                    background: '#e0f2fe',
-                    padding: '4px 8px',
-                    borderRadius: 6,
-                    lineHeight: 1.3
-                  }}
-                >
-                  🌐 <b>ดึงจากเว็บ {currentJob.agency}</b>: {formatArrivalDateTime(currentJob.firstSeenAt || currentJob.lastSeenAt)}
-                  {formatTimeAgo(currentJob.firstSeenAt || currentJob.lastSeenAt) && (
-                    <span style={{ opacity: 0.8, marginLeft: 4 }}>
-                      ({formatTimeAgo(currentJob.firstSeenAt || currentJob.lastSeenAt)})
-                    </span>
-                  )}
                 </div>
 
                 {/* Quick Switch Dropdown */}
@@ -441,9 +442,16 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
                       }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <span className={`agency-badge ${agencyClass}`} style={{ fontSize: 9.5, padding: '2px 5px' }}>
-                        {j.agency}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+                        <span className={`agency-badge ${agencyClass}`} style={{ fontSize: 9.5, padding: '2px 5px' }}>
+                          {j.agency}
+                        </span>
+                        {isRecentJob(j.firstSeenAt || j.lastSeenAt, 48) && (
+                          <span className="new-arrival-pill" style={{ fontSize: 8.5, padding: '1px 5px' }}>
+                            🆕 ใหม่
+                          </span>
+                        )}
+                      </div>
                       <div
                         style={{
                           fontWeight: 700,
@@ -465,11 +473,6 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                     <span>📍 {[j.city, j.state].filter(Boolean).join(', ')}</span>
                     <span style={{ fontWeight: 700, color: 'var(--orange)' }}>{j.wageText || '—'}</span>
-                  </div>
-
-                  {/* Arrival info */}
-                  <div style={{ fontSize: 10.5, color: '#0369a1' }}>
-                    🌐 เว็บ {j.agency}: {formatArrivalDateTime(j.firstSeenAt || j.lastSeenAt)}
                   </div>
 
                   {/* Add action */}
@@ -582,10 +585,15 @@ function buildComparisonRows(activeJobs: Job[]): [string, (j: Job) => React.Reac
       ),
     ],
     [
-      '🌐 เวลาที่ดึงจากเว็บ Agency',
+      '📅 วันที่ตรวจพบในเว็บ Agency',
       (j) => (
         <div>
-          <b style={{ color: '#0369a1' }}>{formatArrivalDateTime(j.firstSeenAt || j.lastSeenAt)}</b>
+          <b style={{ color: 'var(--text-main)' }}>{formatArrivalDateTime(j.firstSeenAt || j.lastSeenAt)}</b>
+          {isRecentJob(j.firstSeenAt || j.lastSeenAt, 48) && (
+            <span className="new-arrival-pill" style={{ marginLeft: 6, fontSize: 10 }}>
+              🆕 ใหม่
+            </span>
+          )}
           {formatTimeAgo(j.firstSeenAt || j.lastSeenAt) && (
             <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 2 }}>
               ({formatTimeAgo(j.firstSeenAt || j.lastSeenAt)})

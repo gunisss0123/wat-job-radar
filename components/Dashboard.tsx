@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useDeferredValue } from 'react';
 import type { Job, JobStatus } from '@/lib/types';
 
 const statusLabels: Record<JobStatus, { label: string; class: string }> = {
@@ -102,6 +102,7 @@ const PAGE_CHUNK = 48;
 
 export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
   const [q, setQ] = useState('');
+  const deferredQ = useDeferredValue(q);
   const [agency, setAgency] = useState('ALL');
   const [state, setState] = useState('ALL');
   const [status, setStatus] = useState('ALL');
@@ -131,7 +132,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
   // Reset page chunk when search or filters change
   useEffect(() => {
     setDisplayLimit(PAGE_CHUNK);
-  }, [q, agency, state, status, chipNewOnly, chipGroup3, chipKitchen, chipHighWage, chipAlaska, chipOpenOnly, sortBy]);
+  }, [deferredQ, agency, state, status, chipNewOnly, chipGroup3, chipKitchen, chipHighWage, chipAlaska, chipOpenOnly, sortBy]);
 
   // Latest Job Arrival Time across all jobs
   const latestArrivalIso = useMemo(() => {
@@ -165,7 +166,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
   const filteredJobs = useMemo(() => {
     return initialJobs.filter((j) => {
       const hay = [j.employer, j.position, j.city, j.state, j.agency, j.category].join(' ').toLowerCase();
-      if (q && !hay.includes(q.toLowerCase())) return false;
+      if (deferredQ && !hay.includes(deferredQ.toLowerCase())) return false;
       if (agency !== 'ALL' && j.agency !== agency) return false;
       if (state !== 'ALL' && j.state !== state) return false;
       if (status !== 'ALL' && j.status !== status) return false;
@@ -479,8 +480,6 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
 
   const isGroup3 = job.availableSlots == null || job.availableSlots >= 3;
   const isRecent = isRecentJob(job.firstSeenAt || job.lastSeenAt, 48);
-  const arrivalTime = formatArrivalDateTime(job.firstSeenAt || job.lastSeenAt);
-  const timeAgo = formatTimeAgo(job.firstSeenAt || job.lastSeenAt);
   const locationDisplay = [job.city, job.state].filter(Boolean).join(', ') || 'USA';
 
   return (
@@ -492,6 +491,7 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
           alt={job.employer}
           className="card-img"
           loading="lazy"
+          decoding="async"
           onError={() => setImgSrc(fallbackImg)}
         />
         <div className="card-img-overlay" />
@@ -500,7 +500,7 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
           <span className={`agency-badge ${agencyClass}`}>{job.agency}</span>
           {isRecent && (
             <span className="new-arrival-pill">
-              🆕 งานเข้าใหม่ {timeAgo ? `(${timeAgo})` : ''}
+              🆕 งานมาใหม่
             </span>
           )}
           <span className={`status-pill ${statusInfo.class}`}>
@@ -517,13 +517,6 @@ function JobCard({ job, onSelect }: { job: Job; onSelect: () => void }) {
 
       {/* Card Content */}
       <div className="card-content">
-        {/* Exact Arrival Timestamp Tag */}
-        <div className={`card-arrival-badge ${isRecent ? 'highlight-new' : ''}`}>
-          <span>🌐</span>
-          <span>ดึงจากเว็บ <b>{job.agency}</b>: <b>{arrivalTime}</b></span>
-          {timeAgo && <span style={{ opacity: 0.8, fontSize: 10.5 }}>({timeAgo})</span>}
-        </div>
-
         <h2 className="card-employer-title" title={job.employer}>
           {job.employer}
         </h2>
@@ -701,30 +694,24 @@ function JobModal({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           </div>
 
-          <div className="modal-section-title">🕒 ประวัติเวลาที่ดึงงานจากเว็บ {job.agency} (Agency Website Crawl)</div>
+          <div className="modal-section-title">📅 ข้อมูลการลงประกาศ (Agency Job Posting Info)</div>
           <div className="modal-details-grid">
             <div className="metric-cell">
-              <span className="metric-cell-label">🌐 ตรวจพบในเว็บ {job.agency} ครั้งแรกเมื่อ</span>
+              <span className="metric-cell-label">เริ่มตรวจพบในเว็บ {job.agency}</span>
               <span className="metric-cell-val val-green" style={{ fontSize: 15 }}>
                 {formatArrivalDateTime(job.firstSeenAt || job.lastSeenAt)}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
-                {formatTimeAgo(job.firstSeenAt || job.lastSeenAt) ? `(${formatTimeAgo(job.firstSeenAt || job.lastSeenAt)})` : ''}
-              </span>
             </div>
             <div className="metric-cell">
-              <span className="metric-cell-label">🔄 รอบดึงข้อมูลสดเพื่อยืนยันสถานะล่าสุด</span>
+              <span className="metric-cell-label">อัปเดตสถานะล่าสุด</span>
               <span className="metric-cell-val" style={{ fontSize: 15 }}>
                 {formatArrivalDateTime(job.lastSeenAt)}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
-                {formatTimeAgo(job.lastSeenAt) ? `(${formatTimeAgo(job.lastSeenAt)})` : ''}
-              </span>
             </div>
             <div className="metric-cell" style={{ gridColumn: 'span 2' }}>
-              <span className="metric-cell-label">⏱️ รอบความถี่ในการดึงงานจากเว็บ {job.agency}</span>
-              <span className="metric-cell-val" style={{ color: 'var(--sky-blue)', fontSize: 13, lineHeight: 1.5 }}>
-                ระบบจะเข้าไปสแกนหน้าเว็บ <b>{job.agency}</b> อัตโนมัติทุกๆ 1 ชั่วโมง เพื่อดึงงานที่เอเจนซี่เพิ่งปล่อยใหม่ออกมาแสดงทันที
+              <span className="metric-cell-label">หมายเหตุการลงประกาศจาก Agency</span>
+              <span className="metric-cell-val" style={{ color: 'var(--text-dim)', fontSize: 12.5, lineHeight: 1.5 }}>
+                เนื่องจากเว็บต้นทางของ {job.agency} ไม่ได้ระบุเวลาลงประกาศไว้ในหน้าเว็บ เรดาร์จึงใช้วันเวลาที่ระบบตรวจพบครั้งแรกบนหน้าเว็บของ Agency เป็นเกณฑ์
               </span>
             </div>
           </div>

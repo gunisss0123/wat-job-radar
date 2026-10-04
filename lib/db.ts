@@ -104,7 +104,15 @@ function toRow(j: Job) {
   };
 }
 
+let memoryCachedJobs: Job[] | null = null;
+let lastCacheTime = 0;
+
 export async function getJobs(): Promise<Job[]> {
+  const now = Date.now();
+  if (memoryCachedJobs && now - lastCacheTime < 60000) {
+    return memoryCachedJobs;
+  }
+
   const db = publicDb();
   if (db) {
     const { data, error } = await db.from('wat_jobs').select('*').eq('is_hidden', false).eq('is_stale', false).order('fit_score', { ascending: false });
@@ -151,12 +159,15 @@ export async function getJobs(): Promise<Job[]> {
         lastSeenAt: pos.lastSeenAt
       }));
     }
-    return realJobs.sort((a, b) => {
+    const sorted = realJobs.sort((a, b) => {
       const timeB = new Date(b.firstSeenAt || b.lastSeenAt || 0).getTime();
       const timeA = new Date(a.firstSeenAt || a.lastSeenAt || 0).getTime();
       if (timeB !== timeA) return timeB - timeA;
       return (b.fitScore || 0) - (a.fitScore || 0);
     });
+    memoryCachedJobs = sorted;
+    lastCacheTime = now;
+    return sorted;
   }
 
   return seedJobs;

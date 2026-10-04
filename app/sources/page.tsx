@@ -1,7 +1,7 @@
 import { loadLocalStore } from '@/lib/engine';
 import { getSourceRuns } from '@/lib/db';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function Page() {
   const store = loadLocalStore();
