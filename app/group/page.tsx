@@ -1,0 +1,1 @@
+import {getJobs} from '@/lib/db'; import GroupPlanner from '@/components/GroupPlanner'; export const dynamic='force-dynamic'; export default async function Page(){return <GroupPlanner jobs={await getJobs()}/>}

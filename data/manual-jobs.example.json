@@ -1,0 +1,15 @@
+[
+  {
+    "agency": "iHappy",
+    "employer": "Example Employer",
+    "season": "Summer 2027",
+    "state": "Alaska",
+    "city": "Seward",
+    "position": "Prep Cook",
+    "wageMin": 17,
+    "wageMax": 17,
+    "wageText": "$17/hr",
+    "status": "UNKNOWN",
+    "sourceUrl": "https://example.com"
+  }
+]

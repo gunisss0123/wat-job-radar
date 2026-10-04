@@ -1,0 +1,40 @@
+name: Sync All WAT Agencies
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *' # Run every 6 hours
+
+concurrency:
+  group: wat-job-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Sync all 5 Agencies (OEG, New Step, ALC, IEE, iHappy)
+        run: npm run sync:all
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Commit and push if updated
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/wat-radar-store.json
+          git diff --staged --quiet || (git commit -m "Auto-sync WAT jobs $(date -u +'%Y-%m-%d %H:%M UTC')" && git push)
