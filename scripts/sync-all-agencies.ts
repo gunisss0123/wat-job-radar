@@ -2,16 +2,18 @@ import { scrapeALC } from '../lib/scrapers/alc';
 import { scrapeIEE } from '../lib/scrapers/iee';
 import { scrapeIHappy } from '../lib/scrapers/ihappy';
 import { scrapeAcadex } from '../lib/scrapers/acadex';
+import { scrapeInterchange } from '../lib/scrapers/interchange';
+import { scrapeI4Group } from '../lib/scrapers/i4group';
 import { ingestScrapedRecords, loadLocalStore } from '../lib/engine';
 
 async function main() {
   console.log('====================================================');
   console.log('   WAT JOB RADAR V1 — MULTI-AGENCY SYNC & AUDIT     ');
-  console.log('      (ALC, IEE, iHappy, OEG, New Step, ACADEX)     ');
+  console.log(' (ALC, IEE, iHappy, OEG, New Step, ACADEX, ITC, I4) ');
   console.log('====================================================\n');
 
   // 1. Sync ALC
-  console.log('[1/4] Scraping ALC (American Learning) via REST API...');
+  console.log('[1/6] Scraping ALC (American Learning) via REST API...');
   try {
     const { records: alcRecords, report: alcReport } = await scrapeALC();
     const { savedPositions: alcSaved } = await ingestScrapedRecords(alcRecords, alcReport);
@@ -21,7 +23,7 @@ async function main() {
   }
 
   // 2. Sync IEE
-  console.log('\n[2/4] Scraping IEE Thailand via Web Crawler...');
+  console.log('\n[2/6] Scraping IEE Thailand via Web Crawler...');
   try {
     const { records: ieeRecords, report: ieeReport } = await scrapeIEE();
     const { savedPositions: ieeSaved } = await ingestScrapedRecords(ieeRecords, ieeReport);
@@ -31,7 +33,7 @@ async function main() {
   }
 
   // 3. Sync iHappy
-  console.log('\n[3/4] Scraping iHappy Education via TablePress Crawler...');
+  console.log('\n[3/6] Scraping iHappy Education via TablePress Crawler...');
   try {
     const { records: ihappyRecords, report: ihappyReport } = await scrapeIHappy();
     const { savedPositions: ihappySaved } = await ingestScrapedRecords(ihappyRecords, ihappyReport);
@@ -41,13 +43,33 @@ async function main() {
   }
 
   // 4. Sync ACADEX
-  console.log('\n[4/4] Scraping ACADEX Thailand via Web Crawler...');
+  console.log('\n[4/6] Scraping ACADEX Thailand via Web Crawler...');
   try {
     const { records: acadexRecords, report: acadexReport } = await scrapeAcadex();
     const { savedPositions: acadexSaved } = await ingestScrapedRecords(acadexRecords, acadexReport);
     console.log(`✓ ACADEX: ${acadexSaved} positions saved across ${acadexReport.employersFound} employers (${acadexReport.failedPages} failed)`);
   } catch (err: any) {
     console.error('✗ ACADEX Error:', err.message);
+  }
+
+  // 5. Sync Interchange
+  console.log('\n[5/6] Scraping Interchange Thailand via Web Connector...');
+  try {
+    const { records: itcRecords, report: itcReport } = await scrapeInterchange();
+    const { savedPositions: itcSaved } = await ingestScrapedRecords(itcRecords, itcReport);
+    console.log(`✓ Interchange: ${itcSaved} positions saved across ${itcReport.employersFound} employers (${itcReport.failedPages} failed)`);
+  } catch (err: any) {
+    console.error('✗ Interchange Error:', err.message);
+  }
+
+  // 6. Sync I4 Group
+  console.log('\n[6/6] Scraping I4 Group Thailand via Web Connector...');
+  try {
+    const { records: i4Records, report: i4Report } = await scrapeI4Group();
+    const { savedPositions: i4Saved } = await ingestScrapedRecords(i4Records, i4Report);
+    console.log(`✓ I4 Group: ${i4Saved} positions saved across ${i4Report.employersFound} employers (${i4Report.failedPages} failed)`);
+  } catch (err: any) {
+    console.error('✗ I4 Group Error:', err.message);
   }
 
   // Summary

@@ -106,6 +106,15 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
     return Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]));
   }, [jobs, selectedState]);
 
+  // Extract all available agencies
+  const agenciesWithCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const j of jobs) {
+      if (j.agency) counts[j.agency] = (counts[j.agency] || 0) + 1;
+    }
+    return Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [jobs]);
+
   // When state changes, reset city to ALL
   const handleStateChange = (state: string) => {
     setSelectedState(state);
@@ -225,13 +234,12 @@ export default function Compare({ jobs }: { jobs: Job[] }) {
               3. เอเจนซี่ (Agency)
             </label>
             <select value={selectedAgency} onChange={(e) => setSelectedAgency(e.target.value)}>
-              <option value="ALL">🏢 ทุก Agency (OEG, NewStep, ALC, IEE, iHappy, ACADEX)</option>
-              <option value="OEG">OEG</option>
-              <option value="New Step">New Step</option>
-              <option value="ALC">ALC</option>
-              <option value="IEE">IEE Thailand</option>
-              <option value="iHappy">iHappy</option>
-              <option value="ACADEX">ACADEX</option>
+              <option value="ALL">🏢 ทุก Agency ({agenciesWithCount.length} แห่ง)</option>
+              {agenciesWithCount.map(([agencyName, count]) => (
+                <option key={agencyName} value={agencyName}>
+                  {agencyName} ({count.toLocaleString()} ตำแหน่ง)
+                </option>
+              ))}
             </select>
           </div>
 

@@ -670,6 +670,18 @@ html, body {
   border: 1px solid #6ee7b7;
 }
 
+.agency-badge.interchange {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+}
+
+.agency-badge.i4group {
+  background: #fae8ff;
+  color: #86198f;
+  border: 1px solid #f0abfc;
+}
+
 /* Status Pill */
 .status-pill {
   font-size: 11px;

@@ -5,11 +5,13 @@ import { scrapeAcadex } from './acadex';
 import { scrapeNewStep } from './newstep';
 import { scrapeALC } from './alc';
 import { scrapeIHappy } from './ihappy';
+import { scrapeInterchange } from './interchange';
+import { scrapeI4Group } from './i4group';
 import { enrichForProfile } from '../profile';
 import { slug } from '../common';
 import { ingestScrapedRecords } from '../engine';
 
-export type ScraperName = 'OEG' | 'New Step' | 'ALC' | 'IEE' | 'iHappy' | 'ACADEX';
+export type ScraperName = 'OEG' | 'New Step' | 'ALC' | 'IEE' | 'iHappy' | 'ACADEX' | 'Interchange' | 'I4 Group';
 
 export function scrapedRecordToLegacyJob(record: ScrapedJobRecord): Job {
   return {
@@ -145,6 +147,40 @@ export async function runScraper(name: ScraperName): Promise<{ jobs: Job[]; run:
       };
     }
 
+    if (name === 'Interchange') {
+      const { records, report } = await scrapeInterchange();
+      await ingestScrapedRecords(records, report);
+      const jobs = records.map(scrapedRecordToLegacyJob).map(enrichForProfile);
+      return {
+        jobs,
+        run: {
+          source: name,
+          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          jobCount: records.length,
+          durationMs: Date.now() - started,
+          ranAt: new Date().toISOString()
+        },
+        report
+      };
+    }
+
+    if (name === 'I4 Group') {
+      const { records, report } = await scrapeI4Group();
+      await ingestScrapedRecords(records, report);
+      const jobs = records.map(scrapedRecordToLegacyJob).map(enrichForProfile);
+      return {
+        jobs,
+        run: {
+          source: name,
+          health: report.failedPages === 0 ? 'OK' : 'ERROR',
+          jobCount: records.length,
+          durationMs: Date.now() - started,
+          ranAt: new Date().toISOString()
+        },
+        report
+      };
+    }
+
     return {
       jobs: [],
       run: {
@@ -176,5 +212,7 @@ export const scrapers: Record<ScraperName, () => Promise<any>> = {
   ALC: scrapeALC,
   IEE: scrapeIEE,
   iHappy: scrapeIHappy,
-  ACADEX: scrapeAcadex
+  ACADEX: scrapeAcadex,
+  Interchange: scrapeInterchange,
+  'I4 Group': scrapeI4Group
 };

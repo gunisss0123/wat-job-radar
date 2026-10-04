@@ -14,6 +14,8 @@
     "sync:oeg": "tsx scripts/sync-oeg.ts",
     "sync:newstep": "tsx scripts/sync-newstep.ts",
     "sync:acadex": "tsx scripts/sync-acadex.ts",
+    "sync:interchange": "tsx scripts/sync-interchange.ts",
+    "sync:i4group": "tsx scripts/sync-i4group.ts",
     "sync:all": "tsx scripts/sync-all-agencies.ts",
     "coverage": "tsx scripts/coverage.ts",
     "typecheck": "tsc --noEmit",

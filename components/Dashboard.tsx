@@ -157,7 +157,10 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
     return counts;
   }, [initialJobs]);
 
-  const agencies = useMemo(() => ['ALL', 'OEG', 'New Step', 'ALC', 'IEE', 'iHappy', 'ACADEX'], []);
+  const agencies = useMemo(() => {
+    const list = Array.from(new Set(initialJobs.map((j) => j.agency).filter(Boolean) as string[])).sort();
+    return ['ALL', ...list];
+  }, [initialJobs]);
   const states = useMemo(
     () => ['ALL', ...Array.from(new Set(initialJobs.map((j) => j.state).filter(Boolean) as string[])).sort()],
     [initialJobs]
@@ -223,7 +226,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
           <span className="eyebrow-chip">⚡ MULTI-AGENCY RADAR · SUMMER 2027</span>
           <h1>เรดาร์รวมงาน Work & Travel 2027</h1>
           <p>
-            รวมงานสาธารณะอัตโนมัติจาก 6 Agency ชั้นนำ (OEG, New Step, ALC, IEE, iHappy, ACADEX) รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
+            รวมงานสาธารณะอัตโนมัติจาก {totalAgencies} Agency ชั้นนำ (OEG, New Step, ALC, IEE, iHappy, ACADEX, Interchange, I4 Group) รวม {initialJobs.length.toLocaleString()} ตำแหน่ง
             เปรียบเทียบค่าแรง ที่พัก จำนวนว่างจริง และภาพสถานที่ได้ในที่เดียว
           </p>
         </div>
@@ -278,7 +281,7 @@ export default function Dashboard({ initialJobs }: { initialJobs: Job[] }) {
           <div className="stat-icon" style={{ background: '#f5f3ff', color: '#7c3aed' }}>🏢</div>
           <div className="stat-content">
             <b>{totalAgencies} Agencies</b>
-            <span>OEG, NewStep, ALC, IEE, iHappy, ACADEX</span>
+            <span>OEG, NewStep, ALC, IEE, iHappy, ACADEX, Interchange, I4 Group</span>
           </div>
         </div>
       </section>

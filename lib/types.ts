@@ -1,4 +1,4 @@
-export type AgencyId = 'OEG' | 'New Step' | 'ACADEX' | 'IEE' | 'iHappy' | string;
+export type AgencyId = 'OEG' | 'New Step' | 'ACADEX' | 'IEE' | 'iHappy' | 'ALC' | 'Interchange' | 'I4 Group' | string;
 export type ConnectorType = 'API' | 'EMBEDDED_JSON' | 'HTML' | 'BROWSER' | 'TBD';
 
 export type JobStatus =

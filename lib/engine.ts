@@ -259,7 +259,7 @@ export async function ingestScrapedRecords(
     positionsFound: report.positionsFound,
     positionsSaved: savedPositions,
     failedPages: report.failedPages,
-    failedUrls: report.failedUrls.map(f => typeof f === 'string' ? f : `${f.url}: ${f.error}`),
+    failedUrls: (report.failedUrls || []).map(f => typeof f === 'string' ? f : `${f.url}: ${f.error}`),
     coveragePct: report.parseCoveragePct,
     durationMs: report.durationMs,
     status: report.status,
