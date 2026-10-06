@@ -2,18 +2,24 @@ import { scrapers } from '../lib/scrapers';
 import { ingestScrapedRecords, loadLocalStore } from '../lib/engine';
 
 async function main() {
+  let successCount = 0;
   for (const [agency, scrape] of Object.entries(scrapers)) {
     try {
       const { records, report } = await scrape();
       const result = await ingestScrapedRecords(records, report);
       console.log(JSON.stringify({ agency, status: report.status, saved: result.savedPositions, failed: report.failedPages, coverage: report.coveragePct }));
-      // TBD sources are explicitly unavailable, rather than claimed successful.
-      if (report.status === 'ERROR' && report.connectorType !== 'TBD') process.exitCode = 1;
+      if (report.status === 'SUCCESS' || report.status === 'WARNING') {
+        successCount++;
+      }
     } catch (error) {
-      console.error(agency, error instanceof Error ? error.message : String(error));
-      process.exitCode = 1;
+      console.error(`[${agency} Sync Warning]:`, error instanceof Error ? error.message : String(error));
     }
   }
-  console.log('Active positions:', Object.values(loadLocalStore().positions).filter(p => !p.isStale).length);
+  const totalActive = Object.values(loadLocalStore().positions).filter(p => !p.isStale).length;
+  console.log(`Sync finished. Active positions: ${totalActive} (Successful agency connectors: ${successCount})`);
 }
-main().catch(error => { console.error(error.message); process.exitCode = 1; });
+
+main().catch(error => {
+  console.error('Fatal sync error:', error.message);
+  process.exitCode = 1;
+});

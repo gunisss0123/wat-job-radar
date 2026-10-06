@@ -1,7 +1,10 @@
 name: Sync All WAT Agencies
 
 on:
-  workflow_dispatch: # รันแบบกดสั่งเองผ่าน GitHub ได้ตลอดเวลาเมื่อต้องการอัปเดต
+  workflow_dispatch:
+  schedule:
+    # รันอัตโนมัติวันละ 2 รอบ (เที่ยงวัน 12:00 น. และ เที่ยงคืน 24:00 น. ตามเวลาไทย = 05:00 UTC และ 17:00 UTC)
+    - cron: '0 5,17 * * *'
 
 concurrency:
   group: wat-job-sync
@@ -13,9 +16,11 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -24,7 +29,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Sync all 8 Agencies (OEG, New Step, ALC, IEE, iHappy, ACADEX, Interchange, I4 Group)
+      - name: Sync all 8 Agencies
         run: npm run sync:all
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -35,4 +40,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/wat-radar-store.json
-          git diff --staged --quiet || (git commit -m "Auto-sync WAT jobs $(date -u +'%Y-%m-%d %H:%M UTC')" && git push)
+          if ! git diff --staged --quiet; then
+            git commit -m "Auto-sync WAT jobs $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No job changes detected."
+          fi
