@@ -1,9 +1,7 @@
 name: Sync All WAT Agencies
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 * * * *' # Run every 1 hour (ทุก 1 ชั่วโมง)
+  workflow_dispatch: # รันแบบกดสั่งเองผ่าน GitHub ได้ตลอดเวลาเมื่อต้องการอัปเดต
 
 concurrency:
   group: wat-job-sync
